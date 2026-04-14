@@ -30,24 +30,21 @@ jobs:
 
           cp index.html app/src/main/assets/index.html
 
-          # App icon (LCARS orange star in black circle)
           cat > /tmp/icon.svg << 'SVGEOF'
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">
-            <circle cx="54" cy="54" r="54" fill="#000010"/>
-            <circle cx="54" cy="54" r="50" fill="#000010" stroke="#FF9900" stroke-width="3"/>
-            <!-- LCARS corner bumper top left -->
+            <circle cx="54" cy="54" r="54" fill="#00001c"/>
+            <circle cx="54" cy="54" r="50" fill="#00001c" stroke="#FF9900" stroke-width="3"/>
             <rect x="8" y="8" width="28" height="28" rx="14" ry="0" fill="#FF9900"/>
-            <rect x="22" y="8" width="14" height="14" fill="#000010"/>
-            <!-- Starfleet delta -->
+            <rect x="22" y="8" width="14" height="14" fill="#00001c"/>
+            <rect x="8" y="8" width="14" height="28" fill="#00EEDD"/>
             <polygon points="54,18 66,72 54,62 42,72" fill="#FF9900"/>
-            <polygon points="54,18 66,72 54,65" fill="#FFCC99" opacity="0.5"/>
-            <!-- Bottom LCARS bar -->
+            <polygon points="54,18 66,72 54,65" fill="#FFCC44" opacity="0.6"/>
             <rect x="8" y="82" width="92" height="12" rx="6" fill="#FF9900"/>
             <rect x="48" y="82" width="52" height="12" fill="#FF9900"/>
+            <rect x="8" y="82" width="20" height="12" rx="6" fill="#00EEDD"/>
           </svg>
           SVGEOF
 
-          # Convert SVG to PNG icons using ImageMagick
           sudo apt-get install -y librsvg2-bin > /dev/null 2>&1
           rsvg-convert -w 48  -h 48  /tmp/icon.svg > app/src/main/res/mipmap-mdpi/ic_launcher.png
           rsvg-convert -w 72  -h 72  /tmp/icon.svg > app/src/main/res/mipmap-hdpi/ic_launcher.png
@@ -57,7 +54,6 @@ jobs:
 
       - name: Write Android source files
         run: |
-
           cat > app/src/main/AndroidManifest.xml << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -136,7 +132,7 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <style name="AppTheme" parent="android:Theme.NoTitleBar.Fullscreen">
-                  <item name="android:windowBackground">#000010</item>
+                  <item name="android:windowBackground">#00001c</item>
               </style>
           </resources>
           EOF
@@ -198,7 +194,6 @@ jobs:
           wget -q https://services.gradle.org/distributions/gradle-8.4-bin.zip -O /tmp/gradle.zip
           unzip -q /tmp/gradle.zip -d /tmp/gradle-dist
           GRADLE_BIN=/tmp/gradle-dist/gradle-8.4/bin/gradle
-
           $GRADLE_BIN wrapper --gradle-version 8.4 --distribution-type bin
 
       - name: Generate keystore
@@ -230,7 +225,7 @@ jobs:
             app-aligned.apk
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: star-trek-infinite-frontier
           path: star-trek-infinite-frontier.apk
