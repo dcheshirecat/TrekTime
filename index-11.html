@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Star Trek: Infinite Frontier</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --o:#FF9900;--o2:#FFCC44;--p:#FFDDBB;
+  --b:#5588FF;--b2:#AACCFF;
+  --r:#FF4444;--r2:#FF9999;
+  --t:#00EEDD;--t2:#88FFEE;
+  --v:#BB55FF;--v2:#DDAAFF;
+  --y:#FFEE22;--y2:#FFF799;
+  --g:#22DD77;--g2:#88FFBB;
+  --pk:#FF55BB;--pk2:#FFAADD;
+  --bg:#00001c;--panel:#080822;--panel2:#0d0d2e;--dim:#665544;--text:#FFEEDD;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:13px;overflow:hidden;}
+.header{display:flex;height:58px;align-items:stretch;padding:4px 4px 0;gap:2px;}
+.hbump{width:66px;background:linear-gradient(135deg,var(--o),var(--o2));border-radius:30px 0 0 0;flex-shrink:0;}
+.hmid{width:8px;background:var(--t);}
+.hmid2{width:5px;background:var(--v);}
+.hbar{flex:1;background:linear-gradient(90deg,var(--o),var(--o2));display:flex;align-items:center;padding:0 10px;justify-content:space-between;}
+.htitle{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:#00001c;letter-spacing:2px;}
+.hstats{display:flex;gap:5px;}
+.hstat{background:rgba(0,0,0,0.25);border-radius:3px;padding:2px 6px;font-size:9px;color:#00001c;font-weight:700;}
+.ebar{height:4px;}
+.efill{height:100%;transition:width 0.5s;}
+.nav{display:flex;gap:2px;padding:3px 4px 0;}
+.nb{flex:1;padding:7px 0;background:var(--panel2);color:var(--b2);border:1px solid #1c1c50;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;transition:all 0.15s;}
+.nb:first-child{border-radius:10px 0 0 10px;}
+.nb:last-child{border-radius:0 10px 10px 0;}
+.nb.active{background:linear-gradient(135deg,var(--o),var(--o2));color:#00001c;font-weight:700;border-color:var(--o2);}
+.layout{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+.swrap{flex:1;overflow:hidden;position:relative;}
+.screen{display:none;position:absolute;inset:0;overflow-y:auto;padding:7px 6px 80px;-webkit-overflow-scrolling:touch;}
+.screen.active{display:block;}
+.mapbanner{background:linear-gradient(135deg,#090925,#0e0e38);border-left:4px solid var(--b);padding:8px 10px;margin-bottom:7px;border-radius:0 5px 5px 0;}
+.mapbanner h3{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;color:var(--b2);margin-bottom:3px;}
+.ggrid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:9px;}
+.sec{aspect-ratio:1;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border:1px solid transparent;transition:all 0.18s;padding:2px;position:relative;user-select:none;}
+.sec:active{transform:scale(0.88);}
+.sec.cur{border-color:var(--y2)!important;box-shadow:0 0 9px var(--y);}
+.sico{font-size:18px;line-height:1;}
+.slbl{font-size:7px;text-align:center;line-height:1.2;margin-top:2px;}
+.shere{font-size:6px;color:var(--y2);font-weight:700;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.shdr{font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:2px;padding:5px 8px;margin-bottom:6px;margin-top:3px;}
+.shdr.bl{color:var(--b2);border-left:3px solid var(--b);background:linear-gradient(90deg,#0a0a2c,transparent);}
+.shdr.tl{color:var(--t2);border-left:3px solid var(--t);background:linear-gradient(90deg,#001c1a,transparent);}
+.shdr.gd{color:var(--o2);border-left:3px solid var(--o);background:linear-gradient(90deg,#1c1000,transparent);}
+.shdr.gn{color:var(--g2);border-left:3px solid var(--g);background:linear-gradient(90deg,#001c0a,transparent);}
+.shdr.pk{color:var(--pk2);border-left:3px solid var(--pk);background:linear-gradient(90deg,#1c0012,transparent);}
+.card{background:linear-gradient(135deg,var(--panel),var(--panel2));border-radius:6px;padding:10px;display:flex;gap:9px;align-items:flex-start;border-left:4px solid #1e1e50;border-top:1px solid #1a1a40;margin-bottom:7px;cursor:pointer;position:relative;transition:all 0.15s;user-select:none;}
+.card:active{transform:scale(0.975);}
+.card.ca{border-left-color:var(--o);box-shadow:0 2px 14px #FF990033;}
+.card.cr{border-left-color:var(--g);box-shadow:0 2px 14px #22DD7733;}
+.sprite{width:44px;height:44px;min-width:44px;border-radius:5px;overflow:hidden;flex-shrink:0;}
+.sprite svg{width:100%;height:100%;}
+.cbody{flex:1;min-width:0;}
+.cname{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:600;color:var(--o2);margin-bottom:2px;}
+.csub{font-size:9px;color:#887766;margin-bottom:3px;}
+.cdesc{font-size:10px;line-height:1.4;color:#CCBBAA;}
+.cstats{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
+.sp{background:#06061a;border:1px solid #1e1e50;border-radius:3px;padding:2px 6px;font-size:9px;white-space:nowrap;}
+.bdg{font-size:7px;padding:2px 7px;border-radius:8px;position:absolute;top:6px;right:6px;font-weight:700;letter-spacing:1px;}
+.bdg-o{background:linear-gradient(135deg,var(--o),var(--o2));color:#00001c;}
+.bdg-g{background:linear-gradient(135deg,var(--g),var(--g2));color:#001c0a;}
+.sbr{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
+.sbl{width:58px;font-size:8px;color:#887766;}
+.sbt{flex:1;height:5px;background:#06061a;border-radius:3px;overflow:hidden;border:1px solid #1e1e50;}
+.sbf{height:100%;border-radius:3px;transition:width 0.7s;}
+.sbv{width:24px;font-size:8px;text-align:right;font-weight:700;}
+.leg{color:var(--v2);}.rar{color:var(--b2);}.unc{color:var(--t2);}.com{color:var(--p);}
+.tag{display:inline-block;font-size:7px;padding:1px 5px;border-radius:3px;margin-right:2px;font-weight:700;}
+.tag-tos{background:#330011;color:#FF9999;border:1px solid #550022;}
+.tag-tng{background:#111133;color:#AACCFF;border:1px solid #222266;}
+.tag-ds9{background:#220022;color:#FF99FF;border:1px solid #440044;}
+.tag-voy{background:#113322;color:#88FFEE;border:1px solid #226644;}
+.tag-dis{background:#221133;color:#DDAAFF;border:1px solid #442266;}
+.tag-snw{background:#112211;color:#88FFBB;border:1px solid #224422;}
+.tag-ld{background:#112233;color:#AACCFF;border:1px solid #223344;}
+.tag-pro{background:#221144;color:#DDAAFF;border:1px solid #442288;}
+.tag-pic{background:#1a1100;color:#FFCC44;border:1px solid #443300;}
+.tag-ent{background:#1a0a00;color:#FFAA77;border:1px solid #442200;}
+.ftabs{display:flex;gap:3px;margin-bottom:7px;flex-wrap:wrap;}
+.ftab{background:var(--panel2);border:1px solid #1e1e50;border-radius:3px;padding:3px 8px;font-size:8px;cursor:pointer;color:#887766;font-family:'Share Tech Mono',monospace;transition:all 0.15s;}
+.ftab.act{background:linear-gradient(135deg,var(--b),#3366DD);color:white;border-color:var(--b2);font-weight:700;}
+.ftab:active{transform:scale(0.95);}
+.spcard{background:linear-gradient(135deg,var(--panel),var(--panel2));border-radius:6px;padding:9px 10px;margin-bottom:6px;display:flex;gap:10px;align-items:flex-start;border-left:3px solid #1e1e50;border-top:1px solid #1a1a40;}
+.spcard.kn{border-left-color:var(--t);}
+.spcard.ho{border-left-color:var(--r)!important;}
+.spcard.ne{border-left-color:var(--y)!important;}
+.spname{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--t2);margin-bottom:2px;}
+.ll{font-size:10px;color:#776655;border-bottom:1px solid #0d0d26;padding:5px 0;line-height:1.4;}
+.ll:first-child{color:var(--p);}
+.admcard{background:linear-gradient(135deg,var(--panel),#0e0e34);border-radius:6px;padding:14px;margin-bottom:10px;border-left:4px solid var(--o);border-top:1px solid #332211;box-shadow:0 2px 20px #FF990022;}
+.xptrack{height:5px;background:#06061a;border-radius:3px;margin-top:8px;overflow:hidden;border:1px solid #2a2a55;}
+.xpfill{height:100%;background:linear-gradient(90deg,var(--o),var(--o2));transition:width 0.5s;}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:10px 0 8px;}
+.scell{background:var(--panel2);border-radius:4px;padding:7px 8px;border-left:3px solid;}
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,16,0.95);z-index:100;align-items:flex-end;}
+.mbg.open{display:flex;}
+.modal{width:100%;background:linear-gradient(180deg,#0c0c2c,#060616);border-top:3px solid var(--o);padding:16px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;animation:sup .25s ease;}
+@keyframes sup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.etype{font-size:10px;color:var(--b2);letter-spacing:2px;margin-bottom:2px;}
+.etitle{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:var(--o2);margin-bottom:12px;}
+.edesc{font-size:11px;line-height:1.6;color:var(--p);padding:10px;background:#030310;border-left:3px solid var(--b);margin-bottom:13px;border-radius:0 4px 4px 0;}
+.eopts{display:flex;flex-direction:column;gap:7px;}
+.obtn{background:linear-gradient(135deg,#070720,#0c0c28);border:1px solid #2233aa;border-radius:5px;padding:12px;color:var(--text);text-align:left;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:11px;transition:all 0.15s;width:100%;}
+.obtn:active{border-color:var(--o2);background:#0d0d30;}
+.olbl{color:var(--o2);font-weight:700;display:block;margin-bottom:3px;}
+.ometa{font-size:9px;color:#556;}
+.outcome{display:none;background:#030310;border:1px solid var(--o);border-radius:6px;padding:14px;margin-top:12px;}
+.outcome.vis{display:block;}
+.ores{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;margin-bottom:8px;}
+.oS{color:var(--g2);}.oF{color:var(--r2);}.oP{color:var(--y2);}
+.otxt{font-size:11px;line-height:1.6;color:var(--p);margin-bottom:12px;}
+.rwds{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.rw{background:#030310;border:1px solid var(--g);color:var(--g2);border-radius:10px;padding:3px 10px;font-size:9px;}
+.cbtn{display:block;width:100%;padding:12px;background:linear-gradient(135deg,var(--o),var(--o2));color:#00001c;border:none;border-radius:5px;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;}
+/* HELP MODAL */
+.hmbg{display:none;position:fixed;inset:0;background:rgba(0,0,16,0.97);z-index:200;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.hmbg.open{display:block;}
+.hmodal{padding:16px 14px 80px;}
+.hm-title{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:900;color:var(--o2);margin-bottom:4px;text-align:center;}
+.hm-sub{font-size:9px;letter-spacing:2px;color:var(--b2);text-align:center;margin-bottom:18px;}
+.hm-sec{background:linear-gradient(135deg,var(--panel),var(--panel2));border-radius:6px;padding:12px;margin-bottom:10px;border-left:4px solid;}
+.hm-h{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;margin-bottom:8px;letter-spacing:1px;}
+.hm-p{font-size:10px;line-height:1.65;color:#CCBBAA;margin-bottom:5px;}
+.hm-tip{background:#030310;border-radius:4px;padding:7px 9px;font-size:9px;line-height:1.5;color:var(--t2);margin-top:5px;border-left:2px solid var(--t);}
+.hclose{display:block;width:100%;padding:14px;background:linear-gradient(135deg,var(--o),var(--o2));color:#00001c;border:none;border-radius:5px;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;margin-top:12px;}
+/* HELP FLOAT BUTTON */
+.hfloat{position:fixed;bottom:76px;right:10px;width:38px;height:38px;background:linear-gradient(135deg,var(--b),#3366FF);border:none;border-radius:50%;font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:white;cursor:pointer;z-index:50;box-shadow:0 2px 12px #5588FF66;}
+.rfbanner{display:none;position:fixed;top:70px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--o),var(--o2));color:#00001c;padding:10px 24px;border-radius:5px;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;z-index:200;white-space:nowrap;animation:rf 3.5s forwards;}
+@keyframes rf{0%{opacity:0;transform:translateX(-50%) translateY(-8px)}15%{opacity:1;transform:translateX(-50%)}70%{opacity:1}100%{opacity:0}}
+.empty{text-align:center;color:#1e1e44;font-size:11px;padding:22px;}
+.notice{font-size:10px;color:var(--t2);text-align:center;padding:8px;margin-bottom:8px;background:#001a18;border:1px solid #005544;border-radius:4px;}
+/* ENERGY REFILL */
+.refill-btn{display:block;width:100%;padding:10px;background:linear-gradient(135deg,#001a18,#002a22);border:1px solid var(--t);border-radius:5px;color:var(--t2);font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;margin-bottom:10px;text-align:center;}
+.refill-btn:active{background:linear-gradient(135deg,#003322,#004433);}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="header">
+    <div class="hbump"></div><div class="hmid"></div><div class="hmid2"></div>
+    <div class="hbar">
+      <div class="htitle">★ INFINITE FRONTIER</div>
+      <div class="hstats">
+        <span class="hstat">⚡<span id="he">100</span></span>
+        <span class="hstat">₪<span id="hc">500</span></span>
+        <span class="hstat" id="hr">ENS</span>
+        <span class="hstat">✦<span id="hx">0</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="ebar"><div class="efill" id="ef" style="width:100%;background:linear-gradient(90deg,var(--t),var(--t2))"></div></div>
+  <div class="nav">
+    <button class="nb active" onclick="nav('map')">🗺 BRIDGE</button>
+    <button class="nb" onclick="nav('fleet')">🚀 FLEET</button>
+    <button class="nb" onclick="nav('crew')">👤 CREW</button>
+    <button class="nb" onclick="nav('lcars')">📡 LCARS</button>
+  </div>
+  <div class="swrap">
+    <div class="screen active" id="screen-map">
+      <div class="mapbanner"><h3>NAVIGATIONAL DISPLAY — SECTOR MAP</h3><div id="mstat" style="font-size:10px;color:var(--p)"></div></div>
+      <div class="ggrid" id="ggrid"></div>
+      <div class="shdr bl">CAPTAIN'S LOG</div>
+      <div id="clog"></div>
+    </div>
+    <div class="screen" id="screen-fleet">
+      <div class="shdr gd">ACTIVE VESSEL</div>
+      <div id="aship"></div>
+      <div class="shdr tl" style="margin-top:9px">FLEET MANIFEST — <span id="fcount">1</span>/<span id="ftotal">11</span></div>
+      <div id="flist"></div>
+    </div>
+    <div class="screen" id="screen-crew">
+      <div class="shdr gn">BRIDGE CREW — <span id="cc">1</span>/<span id="ccap">2</span> ASSIGNED</div>
+      <div id="acrew"></div>
+      <div class="shdr pk" style="margin-top:9px">ALL OFFICERS — <span id="tc">1</span>/<span id="tcmax">30</span></div>
+      <div class="ftabs" id="ftabs"></div>
+      <div id="crewlist"></div>
+    </div>
+    <div class="screen" id="screen-lcars">
+      <div class="shdr gd">ADMIRAL PROFILE</div>
+      <div id="admcard"></div>
+      <div class="shdr tl" style="margin-top:9px">SPECIES DATABASE — <span id="spcount">0</span>/<span id="sptotal">12</span></div>
+      <div id="splist"></div>
+      <div class="shdr bl" style="margin-top:9px">MISSION LOG</div>
+      <div id="fulllog"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ENCOUNTER MODAL -->
+<div class="mbg" id="emod">
+  <div class="modal">
+    <div class="etype" id="etype"></div>
+    <div class="etitle" id="etitle"></div>
+    <div class="edesc" id="edesc"></div>
+    <div class="eopts" id="eopts"></div>
+    <div class="outcome" id="outcome">
+      <div class="ores" id="ores"></div>
+      <div class="otxt" id="otxt"></div>
+      <div class="rwds" id="rwds"></div>
+      <button class="cbtn" onclick="closeEnc()">CONTINUE MISSION</button>
+    </div>
+  </div>
+</div>
+
+<!-- HELP MODAL -->
+<div class="hmbg" id="hmod">
+  <div class="hmodal">
+    <div class="hm-title">STARFLEET BRIEFING</div>
+    <div class="hm-sub">HOW TO PLAY — INFINITE FRONTIER</div>
+
+    <div class="hm-sec" style="border-color:var(--o)">
+      <div class="hm-h" style="color:var(--o2)">🎯 YOUR MISSION</div>
+      <div class="hm-p">You are a <b style="color:var(--o2)">Starfleet Admiral</b>. Explore the galaxy sector by sector, recruit legendary crew from across all Trek eras, build a powerful fleet, and make first contact with alien species. Rise from Ensign to Fleet Admiral.</div>
+    </div>
+
+    <div class="hm-sec" style="border-color:var(--b)">
+      <div class="hm-h" style="color:var(--b2)">🗺 THE GALAXY MAP (BRIDGE TAB)</div>
+      <div class="hm-p">The map shows a 5×5 grid of sectors. <b style="color:var(--b2)">Dark sectors</b> are unexplored. <b style="color:var(--y2)">◉ HERE</b> marks your position.</div>
+      <div class="hm-p"><b style="color:var(--t2)">Tap any sector to warp there.</b> Warping costs energy (⚡):</div>
+      <div class="hm-tip">• Unexplored sector → costs <b>15 ⚡</b> and triggers an Encounter<br>• Already explored → costs <b>10 ⚡</b>, no encounter</div>
+      <div class="hm-p">Sector colors show territory: 🔵 Federation, 🔴 Klingon, 🟢 Romulan, 🟠 Cardassian, 🌀 Anomaly, ✨ Deep Space.</div>
+    </div>
+
+    <div class="hm-sec" style="border-color:var(--v)">
+      <div class="hm-h" style="color:var(--v2)">⚔️ ENCOUNTERS</div>
+      <div class="hm-p">Every time you enter <b style="color:var(--v2)">uncharted space</b>, you face an encounter — a distress signal, hostile contact, first contact, anomaly, or derelict.</div>
+      <div class="hm-p">You choose <b style="color:var(--o2)">one of three approaches</b>. Each approach uses a different skill:</div>
+      <div class="hm-tip">• 📡 <b>Diplomacy</b> — hailing, negotiating, first contact<br>• 🔬 <b>Science</b> — scanning, analysis, investigation<br>• ⚔️ <b>Tactical</b> — combat, evasion, rapid response<br>• ⚙️ <b>Engineering</b> — repairs, navigation, boarding</div>
+      <div class="hm-p">Your success chance = your <b style="color:var(--g2)">crew's average skill</b> + your <b style="color:var(--b2)">ship's stats</b>. Missions can <b style="color:var(--g2)">Succeed</b>, <b style="color:var(--y2)">Partially Succeed</b>, or <b style="color:var(--r2)">Fail</b> — you earn XP either way.</div>
+    </div>
+
+    <div class="hm-sec" style="border-color:var(--g)">
+      <div class="hm-h" style="color:var(--g2)">👤 CREW (CREW TAB)</div>
+      <div class="hm-p">Crew members are recruited through successful missions. Each officer has 6 skills: Command, Diplomacy, Science, Engineering, Medical, Tactical.</div>
+      <div class="hm-tip">• Tap an officer to <b>assign/unassign</b> them to your bridge<br>• Your active ship has a <b>crew capacity limit</b><br>• Assigned crew's skills are averaged for all encounter checks<br>• Match crew specializations to your preferred playstyle</div>
+      <div class="hm-p">Use the <b style="color:var(--pk2)">filter tabs</b> to browse by specialization. Rare and Legendary officers have much higher stats.</div>
+    </div>
+
+    <div class="hm-sec" style="border-color:var(--t)">
+      <div class="hm-h" style="color:var(--t2)">🚀 FLEET (FLEET TAB)</div>
+      <div class="hm-p">Ships are discovered on missions. Each vessel has different stats and <b style="color:var(--t2)">crew capacity</b> — bigger ships hold more officers and boost your encounter skills.</div>
+      <div class="hm-tip">• <b>Shields</b> → boosts Engineering checks<br>• <b>Weapons</b> → boosts Tactical checks<br>• <b>Sensors</b> → boosts Science checks<br>• <b>Warp</b> → speed (flavour + future features)<br>• <b>Crew Capacity</b> → max officers on bridge</div>
+      <div class="hm-p">Tap any ship in your fleet to set it as your <b style="color:var(--o2)">active vessel</b>. Switching ships may drop crew if your new ship has a lower capacity.</div>
+    </div>
+
+    <div class="hm-sec" style="border-color:var(--y)">
+      <div class="hm-h" style="color:var(--y2)">⚡ ENERGY & ₪ CREDITS</div>
+      <div class="hm-p"><b style="color:var(--y2)">Energy</b> is consumed when warping. If you run low, visit the <b style="color:var(--o2)">LCARS tab → Admiral Profile</b> and use <b>"Dock at Starbase"</b> to refill for 50 credits.</div>
+      <div class="hm-p"><b style="color:var(--o2)">Credits</b> are earned from successful missions. Some alien species (Ferengi, Orion) give credit bonuses on first contact.</div>
+    </div>
+
+    <div class="hm-sec" style="border-color:var(--pk)">
+      <div class="hm-h" style="color:var(--pk2)">✦ XP & RANKS</div>
+      <div class="hm-p">Every encounter earns XP — success earns more, but even failures teach lessons. As your XP grows you're promoted through <b style="color:var(--pk2)">11 Starfleet ranks</b> from Ensign to Fleet Admiral.</div>
+      <div class="hm-tip">Ensign → Lt. JG → Lieutenant → Lt. Commander → Commander → Captain → Commodore → Rear Admiral → Vice Admiral → Admiral → <b>Fleet Admiral</b></div>
+    </div>
+
+    <div class="hm-sec" style="border-color:var(--t)">
+      <div class="hm-h" style="color:var(--t2)">📡 LCARS DATABASE</div>
+      <div class="hm-p">Track your overall stats, view all 12 species (known and unknown), and read your full Captain's Log. Species unlock new database entries and passive bonuses when you make first contact.</div>
+    </div>
+
+    <button class="hclose" onclick="closeHelp()">🖖 ENGAGE — LET'S EXPLORE</button>
+  </div>
+</div>
+
+<button class="hfloat" onclick="openHelp()">?</button>
+<div class="rfbanner" id="rfb"></div>
+
+<script>
+// ═══════════ PORTRAIT GENERATOR ═══════════
+function portrait(c){
+  const{bg='#111133',sk='#FFCC99',hr='#442211',hs='short',ey='#222266',un='#CC2211',sp=[]}=c;
+  const hm={
+    bald:'',
+    short:`<ellipse cx="24" cy="12" rx="11" ry="9" fill="${hr}"/><rect x="13" y="12" width="22" height="6" fill="${hr}"/>`,
+    bowl:`<ellipse cx="24" cy="11" rx="13" ry="11" fill="${hr}"/><rect x="11" y="11" width="26" height="9" fill="${hr}"/>`,
+    long:`<ellipse cx="24" cy="12" rx="11" ry="9" fill="${hr}"/><rect x="12" y="12" width="3" height="15" fill="${hr}" rx="1"/><rect x="33" y="12" width="3" height="15" fill="${hr}" rx="1"/>`,
+    up:`<ellipse cx="24" cy="10" rx="11" ry="8" fill="${hr}"/><ellipse cx="24" cy="6" rx="7" ry="5" fill="${hr}"/>`,
+    mop:`<ellipse cx="24" cy="11" rx="14" ry="12" fill="${hr}"/><rect x="10" y="11" width="4" height="10" fill="${hr}" rx="1"/><rect x="34" y="11" width="4" height="10" fill="${hr}" rx="1"/>`,
+    afro:`<ellipse cx="24" cy="12" rx="15" ry="13" fill="${hr}"/>`,
+    wavy:`<ellipse cx="24" cy="12" rx="12" ry="9" fill="${hr}"/><rect x="11" y="12" width="3" height="14" fill="${hr}" rx="2"/><rect x="34" y="12" width="3" height="14" fill="${hr}" rx="2"/>`,
+    slick:`<ellipse cx="24" cy="11" rx="11" ry="8" fill="${hr}"/><rect x="13" y="11" width="22" height="6" fill="${hr}"/>`,
+    stubble:`<ellipse cx="24" cy="12" rx="10" ry="7" fill="${hr}"/>`,
+  };
+  const hv=sp.includes('visor');
+  const pe=sp.includes('pointy_ears');
+  return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+<rect width="48" height="48" rx="6" fill="${bg}"/>
+<path d="M4 48L4 35Q14 27 24 27Q34 27 44 35L44 48Z" fill="${un}"/>
+<path d="M18 27L24 31L30 27" fill="none" stroke="#00000022" stroke-width="2"/>
+<rect x="20" y="26" width="8" height="5" rx="2" fill="${sk}"/>
+${pe?`<polygon points="11,22 7,14 13,24" fill="${sk}"/><polygon points="37,22 41,14 35,24" fill="${sk}"/>`:
+`<ellipse cx="12" cy="23" rx="3" ry="4" fill="${sk}"/><ellipse cx="36" cy="23" rx="3" ry="4" fill="${sk}"/>`}
+<ellipse cx="24" cy="22" rx="12" ry="12" fill="${sk}"/>
+${sp.includes('klingon_ridges')?`<path d="M17 17Q21 12 24 14Q27 12 31 17Q28 13 24 15Q20 13 17 17Z" fill="${hr}" opacity="0.5"/>`:``}
+${sp.includes('bajoran_ridges')?`<path d="M20 15Q24 13 28 15" stroke="${hr}" stroke-width="1.5" fill="none" opacity="0.6"/><path d="M21 13Q24 11 27 13" stroke="${hr}" stroke-width="1" fill="none" opacity="0.5"/>`:``}
+${sp.includes('trill_spots')?`<circle cx="12" cy="18" r="1.5" fill="${hr}" opacity="0.45"/><circle cx="12" cy="23" r="1.5" fill="${hr}" opacity="0.45"/><circle cx="12" cy="28" r="1.5" fill="${hr}" opacity="0.45"/><circle cx="36" cy="18" r="1.5" fill="${hr}" opacity="0.45"/><circle cx="36" cy="23" r="1.5" fill="${hr}" opacity="0.45"/><circle cx="36" cy="28" r="1.5" fill="${hr}" opacity="0.45"/>`:``}
+${hm[hs]||hm.short}
+<path d="M18 17Q20 15.5 22 17" stroke="${hr}" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+<path d="M26 17Q28 15.5 30 17" stroke="${hr}" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+${hv?`<rect x="14" y="18" width="20" height="5" rx="2.5" fill="#FFEE44"/><rect x="14" y="18" width="20" height="5" rx="2.5" fill="none" stroke="#AA8800" stroke-width="1"/>`:
+`<ellipse cx="20" cy="21" rx="3" ry="2.5" fill="white"/><ellipse cx="28" cy="21" rx="3" ry="2.5" fill="white"/>
+<circle cx="20" cy="21" r="1.8" fill="${ey}"/><circle cx="28" cy="21" r="1.8" fill="${ey}"/>
+<circle cx="20.7" cy="20.3" r="0.5" fill="white"/><circle cx="28.7" cy="20.3" r="0.5" fill="white"/>`}
+${sp.includes('borg_implant')?`<rect x="13" y="17" width="9" height="6" rx="1" fill="#445566"/><circle cx="17" cy="20" r="2" fill="#88CCFF"/><rect x="13" y="15" width="4" height="3" fill="#334455"/>`:``}
+<path d="M21 26Q24 28 27 26" fill="none" stroke="#AA6644" stroke-width="1.2" stroke-linecap="round"/>
+${sp.includes('beard')?`<path d="M15 28Q24 37 33 28Q30 33 24 35Q18 33 15 28Z" fill="${hr}" opacity="0.75"/>`:``}
+${sp.includes('goatee')?`<ellipse cx="24" cy="32" rx="4" ry="3" fill="${hr}" opacity="0.8"/>`:``}
+${sp.includes('andorian')?`<line x1="20" y1="9" x2="17" y2="2" stroke="${hr}" stroke-width="2" stroke-linecap="round"/><circle cx="17" cy="2" r="1.5" fill="#AADDFF"/><line x1="28" y1="9" x2="31" y2="2" stroke="${hr}" stroke-width="2" stroke-linecap="round"/><circle cx="31" cy="2" r="1.5" fill="#AADDFF"/>`:``}
+${sp.includes('changeling')?`<path d="M18 15Q24 11 30 15" fill="none" stroke="${sk}" stroke-width="1" opacity="0.4"/>`:``}
+</svg>`;
+}
+
+// ═══════════ CREW PORTRAIT CONFIGS ═══════════
+const CC={
+  kirk:   {bg:'#1a0800',sk:'#FFCC99',hr:'#553322',hs:'slick',  ey:'#1a5276',un:'#BB9900'},
+  spock:  {bg:'#0a0a22',sk:'#EEDDCC',hr:'#111111',hs:'bowl',   ey:'#2d4d6e',un:'#1133AA',sp:['pointy_ears']},
+  mccoy:  {bg:'#0a0a22',sk:'#FFCC99',hr:'#556677',hs:'short',  ey:'#1a5276',un:'#1133AA'},
+  scotty: {bg:'#1a0800',sk:'#FFCCAA',hr:'#111111',hs:'slick',  ey:'#1a5276',un:'#BB9900'},
+  uhura:  {bg:'#1a0000',sk:'#885533',hr:'#111111',hs:'up',     ey:'#111111',un:'#AA2211'},
+  sulu:   {bg:'#1a0800',sk:'#CC9966',hr:'#111111',hs:'short',  ey:'#111111',un:'#BB9900'},
+  chekov: {bg:'#1a0800',sk:'#FFDDCC',hr:'#553322',hs:'mop',    ey:'#443322',un:'#BB9900'},
+  chapel: {bg:'#0a0a22',sk:'#FFDDCC',hr:'#DDCC88',hs:'short',  ey:'#3a6b8c',un:'#1133AA'},
+  picard: {bg:'#110011',sk:'#FFCC99',hr:'#888888',hs:'bald',   ey:'#1a5276',un:'#AA1111'},
+  data:   {bg:'#0a1133',sk:'#DDDDAA',hr:'#BBBB88',hs:'short',  ey:'#DDDD44',un:'#1133AA'},
+  geordi: {bg:'#110a00',sk:'#553322',hr:'#111111',hs:'short',  ey:'#111111',un:'#AA1111',sp:['visor']},
+  worf:   {bg:'#1a0000',sk:'#442211',hr:'#111111',hs:'long',   ey:'#331100',un:'#AA1111',sp:['klingon_ridges']},
+  troi:   {bg:'#110011',sk:'#FFDDCC',hr:'#111111',hs:'wavy',   ey:'#222244',un:'#664488'},
+  riker:  {bg:'#110000',sk:'#FFCCAA',hr:'#442211',hs:'short',  ey:'#1a5276',un:'#AA1111',sp:['beard']},
+  crusher:{bg:'#001122',sk:'#FFDDCC',hr:'#AA4422',hs:'long',   ey:'#1a5276',un:'#116655'},
+  sisko:  {bg:'#1a0011',sk:'#553322',hr:'#111111',hs:'stubble',ey:'#111111',un:'#AA1111',sp:['goatee']},
+  kira:   {bg:'#1a0011',sk:'#CC7744',hr:'#882211',hs:'short',  ey:'#442211',un:'#887744',sp:['bajoran_ridges']},
+  dax:    {bg:'#001133',sk:'#FFDDCC',hr:'#111111',hs:'long',   ey:'#1a5276',un:'#1133AA',sp:['trill_spots']},
+  bashir: {bg:'#001133',sk:'#885533',hr:'#111111',hs:'short',  ey:'#111111',un:'#1133AA'},
+  odo:    {bg:'#1a1100',sk:'#DDBB88',hr:'#BB9933',hs:'slick',  ey:'#884400',un:'#665533',sp:['changeling']},
+  obrien: {bg:'#110a00',sk:'#FFCCAA',hr:'#553322',hs:'short',  ey:'#1a5276',un:'#AA8800'},
+  janeway:{bg:'#110011',sk:'#FFCC99',hr:'#111111',hs:'up',     ey:'#1a5276',un:'#AA1111'},
+  seven:  {bg:'#001122',sk:'#FFDDCC',hr:'#DDBB66',hs:'slick',  ey:'#AAAACC',un:'#889988',sp:['borg_implant']},
+  doctor: {bg:'#001122',sk:'#FFDDEE',hr:'#FFFFFF',hs:'bald',   ey:'#1a5276',un:'#116655'},
+  torres: {bg:'#110a00',sk:'#FFCCAA',hr:'#111111',hs:'long',   ey:'#111111',un:'#AA8800',sp:['klingon_ridges']},
+  tuvok:  {bg:'#001122',sk:'#553322',hr:'#111111',hs:'short',  ey:'#111111',un:'#111122',sp:['pointy_ears']},
+  burnham:{bg:'#220033',sk:'#553322',hr:'#111111',hs:'afro',   ey:'#111111',un:'#1144BB'},
+  pike:   {bg:'#003322',sk:'#FFCC99',hr:'#111111',hs:'slick',  ey:'#1a5276',un:'#334466'},
+  una:    {bg:'#003322',sk:'#FFDDCC',hr:'#111111',hs:'long',   ey:'#1a5276',un:'#334466'},
+  tpol:   {bg:'#221100',sk:'#FFDDCC',hr:'#111111',hs:'short',  ey:'#1a5276',un:'#1133AA',sp:['pointy_ears']},
+  lorca:  {bg:'#220033',sk:'#FFCCAA',hr:'#332211',hs:'stubble',ey:'#111111',un:'#222233'},
+};
+
+// ═══════════ SHIP SPRITES ═══════════
+const SHIP_SPRITES={
+  reliant:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"><rect width="60" height="60" fill="#030312"/><circle cx="8" cy="8" r="0.7" fill="#fff4"/><circle cx="52" cy="15" r="0.7" fill="#fff4"/><circle cx="15" cy="50" r="0.7" fill="#fff4"/><rect x="6" y="34" width="9" height="19" rx="4" fill="#8899AA"/><rect x="45" y="34" width="9" height="19" rx="4" fill="#8899AA"/><ellipse cx="10" cy="52" rx="3.5" ry="2" fill="#44BBFF" opacity="0.9"/><ellipse cx="50" cy="52" rx="3.5" ry="2" fill="#44BBFF" opacity="0.9"/><rect x="15" y="33" width="30" height="11" rx="4" fill="#AABBCC"/><rect x="22" y="36" width="16" height="5" rx="2" fill="#889BAD"/><rect x="22" y="28" width="5" height="7" fill="#99AABC"/><rect x="33" y="28" width="5" height="7" fill="#99AABC"/><ellipse cx="30" cy="20" rx="22" ry="18" fill="#BBCCDD"/><ellipse cx="30" cy="20" rx="15" ry="12" fill="none" stroke="#99AACC" stroke-width="1"/><ellipse cx="30" cy="20" rx="6" ry="5" fill="#CCDDEE"/><circle cx="30" cy="14" r="2.5" fill="#DDEEFF"/></svg>`,
+
+  excelsior:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 75"><rect width="60" height="75" fill="#030312"/><circle cx="5" cy="10" r="0.7" fill="#fff4"/><circle cx="55" cy="5" r="0.7" fill="#fff4"/><rect x="4" y="38" width="9" height="28" rx="4" fill="#8899AA" transform="rotate(-6,8,52)"/><rect x="47" y="38" width="9" height="28" rx="4" fill="#8899AA" transform="rotate(6,52,52)"/><ellipse cx="7" cy="65" rx="3.5" ry="2" fill="#44BBFF" opacity="0.9"/><ellipse cx="53" cy="65" rx="3.5" ry="2" fill="#44BBFF" opacity="0.9"/><path d="M12 40 Q30 34 48 40 L45 65 Q30 70 15 65Z" fill="#AABBCC"/><path d="M22 40 Q30 36 38 40 L36 58 Q30 61 24 58Z" fill="#99AABD"/><path d="M10 44 Q16 40 20 46" fill="none" stroke="#8899B0" stroke-width="3"/><path d="M50 44 Q44 40 40 46" fill="none" stroke="#8899B0" stroke-width="3"/><ellipse cx="30" cy="22" rx="22" ry="17" fill="#BBCCDD"/><ellipse cx="30" cy="22" rx="15" ry="11" fill="none" stroke="#99AACC" stroke-width="1"/><ellipse cx="30" cy="22" rx="6" ry="4.5" fill="#CCDDEE"/><circle cx="30" cy="16" r="2.5" fill="#DDEEFF"/><rect x="28" y="34" width="4" height="8" fill="#99AABD"/></svg>`,
+
+  enterprise_a:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 70"><rect width="60" height="70" fill="#030312"/><circle cx="7" cy="7" r="0.7" fill="#fff4"/><circle cx="53" cy="12" r="0.7" fill="#fff4"/><rect x="3" y="36" width="9" height="25" rx="4" fill="#8899AA" transform="rotate(-8,7,48)"/><rect x="48" y="36" width="9" height="25" rx="4" fill="#8899AA" transform="rotate(8,53,48)"/><ellipse cx="6" cy="60" rx="3" ry="2" fill="#44BBFF" opacity="0.9"/><ellipse cx="54" cy="60" rx="3" ry="2" fill="#44BBFF" opacity="0.9"/><path d="M14 38 Q30 32 46 38 L44 58 Q30 63 16 58Z" fill="#AABBCC"/><path d="M24 38 Q30 34 36 38 L35 54 Q30 57 25 54Z" fill="#99AABD"/><path d="M9 42 Q14 37 18 44" fill="none" stroke="#8899B0" stroke-width="3"/><path d="M51 42 Q46 37 42 44" fill="none" stroke="#8899B0" stroke-width="3"/><ellipse cx="30" cy="21" rx="21" ry="16" fill="#BBCCDD"/><ellipse cx="30" cy="21" rx="14" ry="10" fill="none" stroke="#99AACC" stroke-width="1"/><ellipse cx="30" cy="21" rx="5.5" ry="4" fill="#CCDDEE"/><circle cx="30" cy="15" r="2.5" fill="#DDEEFF"/><rect x="28" y="33" width="4" height="7" fill="#99AABD"/><ellipse cx="30" cy="56" rx="5" ry="3" fill="#44AAFF" opacity="0.7"/></svg>`,
+
+  enterprise_d:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 80"><rect width="70" height="80" fill="#030312"/><circle cx="5" cy="8" r="0.7" fill="#fff4"/><circle cx="65" cy="5" r="0.7" fill="#fff4"/><rect x="2" y="44" width="12" height="26" rx="5" fill="#8899AA"/><rect x="56" y="44" width="12" height="26" rx="5" fill="#8899AA"/><ellipse cx="8" cy="69" rx="4.5" ry="2.5" fill="#44BBFF" opacity="0.9"/><ellipse cx="62" cy="69" rx="4.5" ry="2.5" fill="#44BBFF" opacity="0.9"/><path d="M14 44 Q35 37 56 44 L54 68 Q35 74 16 68Z" fill="#AABBCC"/><path d="M24 44 Q35 39 46 44 L44 63 Q35 67 26 63Z" fill="#99AABD"/><path d="M8 50 Q14 44 18 52" fill="none" stroke="#8899B0" stroke-width="4"/><path d="M62 50 Q56 44 52 52" fill="none" stroke="#8899B0" stroke-width="4"/><ellipse cx="35" cy="24" rx="28" ry="22" fill="#BBCCDD"/><ellipse cx="35" cy="24" rx="20" ry="15" fill="none" stroke="#99AACC" stroke-width="1.2"/><ellipse cx="35" cy="24" rx="9" ry="7" fill="#CCDDEE"/><circle cx="35" cy="16" r="3" fill="#DDEEFF"/><rect x="33" y="40" width="4" height="7" fill="#99AABD"/><ellipse cx="35" cy="62" rx="6" ry="4" fill="#44AAFF" opacity="0.7"/></svg>`,
+
+  enterprise_e:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 75"><rect width="65" height="75" fill="#030312"/><circle cx="6" cy="6" r="0.7" fill="#fff4"/><circle cx="59" cy="11" r="0.7" fill="#fff4"/><rect x="2" y="40" width="10" height="26" rx="4" fill="#778899" transform="rotate(-5,7,53)"/><rect x="53" y="40" width="10" height="26" rx="4" fill="#778899" transform="rotate(5,58,53)"/><ellipse cx="6" cy="65" rx="3.5" ry="2" fill="#66DDFF" opacity="0.9"/><ellipse cx="59" cy="65" rx="3.5" ry="2" fill="#66DDFF" opacity="0.9"/><path d="M12 40 Q32 33 53 40 L51 63 Q32 69 14 63Z" fill="#9AABBC"/><path d="M21 40 Q32 35 44 40 L42 59 Q32 63 23 59Z" fill="#8899AD"/><path d="M7 46 Q12 40 17 47" fill="none" stroke="#7788A0" stroke-width="3"/><path d="M58 46 Q53 40 48 47" fill="none" stroke="#7788A0" stroke-width="3"/><ellipse cx="32" cy="20" rx="24" ry="17" fill="#BBCCD8"/><ellipse cx="32" cy="20" rx="16" ry="11" fill="none" stroke="#99AACC" stroke-width="1"/><ellipse cx="32" cy="20" rx="6" ry="4" fill="#CCDDE8"/><circle cx="32" cy="13" r="2.5" fill="#DDEEFF"/><rect x="30" y="32" width="4" height="7" fill="#8899AD"/><ellipse cx="32" cy="58" rx="5.5" ry="3" fill="#66CCFF" opacity="0.7"/></svg>`,
+
+  defiant:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 55 65"><rect width="55" height="65" fill="#030312"/><circle cx="5" cy="5" r="0.7" fill="#fff4"/><circle cx="50" cy="10" r="0.7" fill="#fff4"/><path d="M10 15 Q27 8 45 15 L50 55 Q27 60 5 55Z" fill="#7788AA"/><path d="M16 15 Q27 10 39 15 L43 52 Q27 56 12 52Z" fill="#6677AA"/><ellipse cx="27" cy="56" rx="8" ry="4" fill="#44BBFF" opacity="0.9"/><rect x="8" y="22" width="8" height="25" rx="3" fill="#556688"/><rect x="39" y="22" width="8" height="25" rx="3" fill="#556688"/><ellipse cx="12" cy="47" rx="3" ry="2" fill="#44BBFF" opacity="0.7"/><ellipse cx="43" cy="47" rx="3" ry="2" fill="#44BBFF" opacity="0.7"/><ellipse cx="27" cy="22" rx="12" ry="9" fill="#8899BB"/><circle cx="27" cy="17" r="3" fill="#99AABB"/><rect x="22" y="13" width="10" height="4" fill="#778899"/></svg>`,
+
+  voyager:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 75"><rect width="65" height="75" fill="#030312"/><circle cx="6" cy="6" r="0.7" fill="#fff4"/><circle cx="59" cy="9" r="0.7" fill="#fff4"/><rect x="2" y="35" width="10" height="30" rx="4" fill="#8899AA" transform="rotate(-15,7,50)"/><rect x="53" y="35" width="10" height="30" rx="4" fill="#8899AA" transform="rotate(15,58,50)"/><ellipse cx="3" cy="63" rx="3.5" ry="2" fill="#44DDFF" opacity="0.9"/><ellipse cx="62" cy="63" rx="3.5" ry="2" fill="#44DDFF" opacity="0.9"/><path d="M14 38 Q32 32 51 38 L49 60 Q32 65 16 60Z" fill="#AABBCC"/><path d="M22 38 Q32 34 43 38 L41 57 Q32 61 24 57Z" fill="#99AABD"/><path d="M9 43 Q13 37 18 43" fill="none" stroke="#8899B0" stroke-width="3"/><path d="M56 43 Q52 37 47 43" fill="none" stroke="#8899B0" stroke-width="3"/><ellipse cx="32" cy="21" rx="22" ry="16" fill="#AABBCC"/><ellipse cx="32" cy="21" rx="15" ry="10" fill="none" stroke="#99AACC" stroke-width="1"/><ellipse cx="32" cy="21" rx="6" ry="4" fill="#CCDDEE"/><circle cx="32" cy="15" r="2.5" fill="#DDEEFF"/><rect x="30" y="32" width="4" height="8" fill="#99AABD"/><ellipse cx="32" cy="56" rx="5" ry="3" fill="#44DDFF" opacity="0.7"/></svg>`,
+
+  discovery:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 70"><rect width="70" height="70" fill="#030312"/><circle cx="5" cy="5" r="0.7" fill="#fff4"/><circle cx="65" cy="8" r="0.7" fill="#fff4"/><ellipse cx="35" cy="20" rx="20" ry="15" fill="#99AABB"/><ellipse cx="35" cy="20" rx="13" ry="10" fill="none" stroke="#7788AA" stroke-width="1.2"/><ellipse cx="35" cy="20" rx="5" ry="4" fill="#AABBCC"/><circle cx="35" cy="14" r="2.5" fill="#BBCCDD"/><path d="M28 30 L28 40 L42 40 L42 30" fill="none" stroke="#6677AA" stroke-width="2"/><ellipse cx="35" cy="46" rx="18" ry="13" fill="#99AABB"/><ellipse cx="35" cy="46" rx="12" ry="9" fill="none" stroke="#7788AA" stroke-width="1.2"/><ellipse cx="35" cy="46" rx="5" ry="4" fill="#AABBCC"/><circle cx="35" cy="40" r="2" fill="#BBCCDD"/><rect x="3" y="35" width="22" height="8" rx="4" fill="#7788AA"/><rect x="45" y="35" width="22" height="8" rx="4" fill="#7788AA"/><ellipse cx="3" cy="39" rx="2.5" ry="4" fill="#66BBFF" opacity="0.8"/><ellipse cx="67" cy="39" rx="2.5" ry="4" fill="#66BBFF" opacity="0.8"/></svg>`,
+
+  enterprise_snw:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 68"><rect width="60" height="68" fill="#030312"/><circle cx="5" cy="7" r="0.7" fill="#fff4"/><circle cx="55" cy="4" r="0.7" fill="#fff4"/><rect x="4" y="35" width="9" height="24" rx="4" fill="#8899AA" transform="rotate(-7,8,47)"/><rect x="47" y="35" width="9" height="24" rx="4" fill="#8899AA" transform="rotate(7,52,47)"/><ellipse cx="7" cy="58" rx="3" ry="2" fill="#44BBFF" opacity="0.9"/><ellipse cx="53" cy="58" rx="3" ry="2" fill="#44BBFF" opacity="0.9"/><path d="M13 36 Q30 30 47 36 L45 57 Q30 62 15 57Z" fill="#AABBCC"/><path d="M22 36 Q30 32 38 36 L37 53 Q30 56 23 53Z" fill="#99AABD"/><path d="M9 41 Q14 36 18 42" fill="none" stroke="#8899B0" stroke-width="3"/><path d="M51 41 Q46 36 42 42" fill="none" stroke="#8899B0" stroke-width="3"/><ellipse cx="30" cy="20" rx="21" ry="16" fill="#BBCCDD"/><ellipse cx="30" cy="20" rx="14" ry="10" fill="none" stroke="#99AACC" stroke-width="1"/><ellipse cx="30" cy="20" rx="5.5" ry="4" fill="#CCDDEE"/><circle cx="30" cy="14" r="2.5" fill="#DDEEFF"/><rect x="28" y="32" width="4" height="6" fill="#99AABD"/><ellipse cx="30" cy="53" rx="5" ry="3" fill="#44AAFF" opacity="0.7"/></svg>`,
+
+  cerritos:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 55 65"><rect width="55" height="65" fill="#030312"/><circle cx="5" cy="5" r="0.7" fill="#fff4"/><circle cx="50" cy="10" r="0.7" fill="#fff4"/><rect x="4" y="33" width="8" height="22" rx="4" fill="#7788AA" transform="rotate(-5,8,44)"/><rect x="43" y="33" width="8" height="22" rx="4" fill="#7788AA" transform="rotate(5,47,44)"/><ellipse cx="7" cy="54" rx="2.5" ry="1.5" fill="#44BBFF" opacity="0.9"/><ellipse cx="48" cy="54" rx="2.5" ry="1.5" fill="#44BBFF" opacity="0.9"/><path d="M12 33 Q27 27 43 33 L41 52 Q27 57 14 52Z" fill="#9AABBC"/><path d="M20 33 Q27 29 35 33 L33 49 Q27 52 22 49Z" fill="#8899AD"/><path d="M8 38 Q12 33 16 39" fill="none" stroke="#7788A0" stroke-width="2.5"/><path d="M47 38 Q43 33 39 39" fill="none" stroke="#7788A0" stroke-width="2.5"/><ellipse cx="27" cy="19" rx="18" ry="13" fill="#AABBCC"/><ellipse cx="27" cy="19" rx="12" ry="8" fill="none" stroke="#99AACC" stroke-width="1"/><ellipse cx="27" cy="19" rx="5" ry="3.5" fill="#BBCCDD"/><circle cx="27" cy="13" r="2" fill="#CCDDEE"/><rect x="25" y="28" width="4" height="6" fill="#8899AD"/></svg>`,
+
+  protostar:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 70"><rect width="60" height="70" fill="#030312"/><circle cx="5" cy="5" r="0.7" fill="#fff4"/><circle cx="55" cy="8" r="0.7" fill="#fff4"/><path d="M15 20 Q30 10 45 20 L50 60 Q30 66 10 60Z" fill="#8899BB"/><path d="M20 20 Q30 12 40 20 L44 57 Q30 62 16 57Z" fill="#7788BB"/><ellipse cx="30" cy="62" rx="10" ry="5" fill="#AA66FF" opacity="0.9"/><ellipse cx="30" cy="19" rx="16" ry="11" fill="#99AACC"/><ellipse cx="30" cy="19" rx="10" ry="7" fill="none" stroke="#7788BB" stroke-width="1"/><ellipse cx="30" cy="19" rx="4" ry="3" fill="#BBCCDD"/><circle cx="30" cy="13" r="2" fill="#CCDDE0"/><rect x="6" y="28" width="8" height="22" rx="4" fill="#6677AA"/><rect x="46" y="28" width="8" height="22" rx="4" fill="#6677AA"/><ellipse cx="10" cy="50" rx="3" ry="2" fill="#AA66FF" opacity="0.9"/><ellipse cx="50" cy="50" rx="3" ry="2" fill="#AA66FF" opacity="0.9"/></svg>`,
+};
+
+// ═══════════ SPECIES ICONS ═══════════
+const SPEC_ICONS={
+  vulcan:    `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#0a1a2a"/><circle cx="20" cy="20" r="14" fill="none" stroke="#6699AA" stroke-width="1.5"/><line x1="20" y1="6" x2="20" y2="34" stroke="#6699AA" stroke-width="1.5"/><polygon points="20,8 12,22 28,22" fill="none" stroke="#88CCAA" stroke-width="1.5"/></svg>`,
+  klingon:   `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#1a0000"/><path d="M20 5 L32 28 L20 22 L8 28Z" fill="#CC2211" opacity="0.8"/><path d="M20 10 L28 26 L20 20 L12 26Z" fill="#FF4433"/><circle cx="20" cy="22" r="3" fill="#FF6655"/></svg>`,
+  romulan:   `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#001a00"/><ellipse cx="20" cy="20" rx="14" ry="10" fill="none" stroke="#44AA44" stroke-width="1.5"/><path d="M10 15 L20 8 L30 15 L30 25 L20 32 L10 25Z" fill="none" stroke="#66CC66" stroke-width="1"/><circle cx="20" cy="20" r="3" fill="#44CC44"/></svg>`,
+  bajoran:   `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#1a0a00"/><circle cx="20" cy="20" r="12" fill="none" stroke="#CC9944" stroke-width="1.5"/><path d="M20 8 L23 17 L32 17 L25 23 L28 32 L20 26 L12 32 L15 23 L8 17 L17 17Z" fill="#FFCC66" opacity="0.8"/></svg>`,
+  cardassian:`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#1a0800"/><rect x="10" y="10" width="20" height="20" fill="none" stroke="#CC7722" stroke-width="1.5"/><rect x="15" y="15" width="10" height="10" fill="#AA5511" opacity="0.8"/><line x1="10" y1="10" x2="30" y2="30" stroke="#CC7722" stroke-width="1"/><line x1="30" y1="10" x2="10" y2="30" stroke="#CC7722" stroke-width="1"/></svg>`,
+  ferengi:   `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#1a1100"/><circle cx="20" cy="18" r="10" fill="#AA8800" opacity="0.7"/><path d="M12 14 Q20 8 28 14 Q26 20 20 22 Q14 20 12 14Z" fill="#FFCC22" opacity="0.8"/><text x="20" y="33" text-anchor="middle" font-size="9" fill="#FFCC22" font-family="serif">₪</text></svg>`,
+  andorian:  `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#000a1a"/><circle cx="20" cy="22" r="11" fill="#3355AA" opacity="0.8"/><line x1="16" y1="11" x2="13" y2="4" stroke="#88CCFF" stroke-width="2"/><circle cx="13" cy="4" r="2" fill="#AADDFF"/><line x1="24" y1="11" x2="27" y2="4" stroke="#88CCFF" stroke-width="2"/><circle cx="27" cy="4" r="2" fill="#AADDFF"/><ellipse cx="20" cy="22" rx="6" ry="5" fill="#4466BB"/></svg>`,
+  borg:      `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#050505"/><rect x="8" y="8" width="24" height="24" fill="#222233" stroke="#445566" stroke-width="1.5"/><rect x="12" y="12" width="7" height="7" fill="#334455"/><rect x="21" y="12" width="7" height="7" fill="#334455"/><rect x="12" y="21" width="7" height="7" fill="#334455"/><circle cx="25" cy="25" r="3.5" fill="#4488FF" opacity="0.9"/><line x1="8" y1="20" x2="32" y2="20" stroke="#445566" stroke-width="0.8"/><line x1="20" y1="8" x2="20" y2="32" stroke="#445566" stroke-width="0.8"/></svg>`,
+  betazoid:  `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#110011"/><circle cx="20" cy="20" r="13" fill="none" stroke="#AA66FF" stroke-width="1.5"/><ellipse cx="20" cy="20" rx="6" ry="9" fill="#7733AA" opacity="0.7"/><circle cx="20" cy="20" r="3" fill="#CC88FF" opacity="0.9"/><path d="M14 14 Q20 10 26 14 Q22 20 20 20 Q18 20 14 14Z" fill="#CC88FF" opacity="0.3"/></svg>`,
+  trill:     `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#001122"/><ellipse cx="20" cy="20" rx="12" ry="14" fill="#3355AA" opacity="0.7"/><circle cx="14" cy="12" r="2" fill="#88AAFF" opacity="0.7"/><circle cx="14" cy="19" r="2" fill="#88AAFF" opacity="0.7"/><circle cx="14" cy="26" r="2" fill="#88AAFF" opacity="0.7"/><circle cx="26" cy="12" r="2" fill="#88AAFF" opacity="0.7"/><circle cx="26" cy="19" r="2" fill="#88AAFF" opacity="0.7"/><circle cx="26" cy="26" r="2" fill="#88AAFF" opacity="0.7"/></svg>`,
+  dominion:  `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#0a0022"/><polygon points="20,5 35,32 5,32" fill="#5522AA" opacity="0.8" stroke="#8844FF" stroke-width="1.5"/><circle cx="20" cy="23" r="5" fill="#AA66FF" opacity="0.8"/><circle cx="20" cy="23" r="2" fill="#DDAAFF"/></svg>`,
+  orion:     `<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#001200"/><circle cx="20" cy="20" r="13" fill="#225522" opacity="0.8" stroke="#44AA44" stroke-width="1.5"/><path d="M14 16 Q20 10 26 16 Q24 22 20 24 Q16 22 14 16Z" fill="#55CC55" opacity="0.8"/><circle cx="20" cy="24" r="3" fill="#44BB44"/></svg>`,
+};
+
+// ═══════════ GAME DATA ═══════════
+const SHIPS={
+  reliant:      {n:'USS Reliant',      reg:'NCC-1864',   cls:'Miranda',          era:'TOS',rar:'common',   sh:55,wp:65,warp:7.0,sen:60,cap:2,desc:'A workhorse of the fleet. Where every Starfleet journey begins.'},
+  excelsior:    {n:'USS Excelsior',    reg:'NCC-2000',   cls:'Excelsior',        era:'TOS',rar:'uncommon', sh:70,wp:72,warp:8.5,sen:72,cap:3,desc:'The Great Experiment. Now a proven heavy cruiser.'},
+  enterprise_a: {n:'USS Enterprise-A', reg:'NCC-1701-A', cls:'Constitution Refit',era:'TOS',rar:'rare',    sh:68,wp:75,warp:8.5,sen:70,cap:3,desc:"Reborn and renamed. Kirk's final command."},
+  enterprise_d: {n:'USS Enterprise-D', reg:'NCC-1701-D', cls:'Galaxy',           era:'TNG',rar:'legendary',sh:90,wp:80,warp:9.2,sen:95,cap:5,desc:"Picard's flagship. Exploration is its purpose."},
+  enterprise_e: {n:'USS Enterprise-E', reg:'NCC-1701-E', cls:'Sovereign',        era:'TNG',rar:'legendary',sh:95,wp:95,warp:9.9,sen:90,cap:5,desc:"The pinnacle of Federation engineering."},
+  defiant:      {n:'USS Defiant',      reg:'NX-74205',   cls:'Defiant',          era:'DS9',rar:'rare',     sh:95,wp:100,warp:9.5,sen:70,cap:3,desc:'Built to fight the Borg. Compact, devastating.'},
+  voyager:      {n:'USS Voyager',      reg:'NCC-74656',  cls:'Intrepid',         era:'VOY',rar:'rare',     sh:75,wp:75,warp:9.975,sen:92,cap:4,desc:'Lost in the Delta Quadrant. Found her way home.'},
+  discovery:    {n:'USS Discovery',    reg:'NCC-1031',   cls:'Crossfield',       era:'DIS',rar:'legendary',sh:80,wp:85,warp:9.9,sen:85,cap:4,desc:'Equipped with a spore drive for instantaneous travel.'},
+  enterprise_snw:{n:'USS Enterprise',  reg:'NCC-1701',   cls:'Constitution (SNW)',era:'SNW',rar:'legendary',sh:78,wp:78,warp:8.5,sen:82,cap:4,desc:"Pike's Enterprise. Strange new worlds call to her."},
+  cerritos:     {n:'USS Cerritos',     reg:'NCC-75567',  cls:'California',       era:'LD', rar:'uncommon', sh:60,wp:58,warp:7.5,sen:65,cap:3,desc:'Second contact specialists. Underestimated.'},
+  protostar:    {n:'USS Protostar',    reg:'NX-76884',   cls:'Protostar',        era:'PRO',rar:'legendary',sh:85,wp:80,warp:0,sen:88,cap:4,desc:'Found abandoned. Contains a proto-warp drive.'},
+};
+const CREW={
+  kirk:   {n:'James T. Kirk',          role:'Captain',         spec:'Command',     era:'TOS',rar:'legendary',com:90,dip:75,sci:50,eng:40,med:30,tac:85,desc:'Wins through instinct and audacity. The most famous captain in Starfleet history.'},
+  spock:  {n:'Spock',                  role:'Science Officer', spec:'Science',     era:'TOS',rar:'legendary',com:60,dip:80,sci:95,eng:70,med:50,tac:65,desc:'Half-Vulcan, all logic. The science officer all others are measured against.'},
+  mccoy:  {n:"Leonard 'Bones' McCoy",  role:'Chief Medical',   spec:'Medical',     era:'TOS',rar:'rare',     com:30,dip:65,sci:60,eng:20,med:95,tac:25,desc:"He's a doctor, not an engineer. But he'll save you against all odds."},
+  scotty: {n:'Montgomery Scott',       role:'Chief Engineer',  spec:'Engineering', era:'TOS',rar:'rare',     com:40,dip:50,sci:55,eng:98,med:20,tac:45,desc:"The miracle worker. Give him an impossible deadline — he'll beat it."},
+  uhura:  {n:'Nyota Uhura',            role:'Communications',  spec:'Diplomacy',   era:'TOS',rar:'uncommon', com:45,dip:92,sci:65,eng:40,med:30,tac:50,desc:'Master linguist. Opens hailing frequencies across the universe.'},
+  sulu:   {n:'Hikaru Sulu',            role:'Helmsman',        spec:'Tactical',    era:'TOS',rar:'uncommon', com:55,dip:60,sci:50,eng:55,med:25,tac:78,desc:'Swords, botany, or starships — a steady hand who masters all.'},
+  chekov: {n:'Pavel Chekov',           role:'Navigator',       spec:'Engineering', era:'TOS',rar:'uncommon', com:45,dip:55,sci:60,eng:72,med:20,tac:68,desc:"Russia's finest export to Starfleet. Navigator and loyal crewman."},
+  chapel: {n:'Christine Chapel',       role:'Doctor',          spec:'Medical',     era:'SNW',rar:'uncommon', com:35,dip:70,sci:72,eng:25,med:88,tac:30,desc:'From nurse to brilliant doctor. Compassionate and unstoppable.'},
+  picard: {n:'Jean-Luc Picard',        role:'Captain',         spec:'Command',     era:'TNG',rar:'legendary',com:70,dip:98,sci:75,eng:50,med:40,tac:72,desc:"The foremost diplomat in Starfleet history. 'Make it so.'"},
+  data:   {n:'Data',                   role:'Ops Officer',     spec:'Science',     era:'TNG',rar:'legendary',com:75,dip:60,sci:98,eng:85,med:65,tac:80,desc:'Android with the most advanced positronic brain ever created.'},
+  geordi: {n:'Geordi La Forge',        role:'Chief Engineer',  spec:'Engineering', era:'TNG',rar:'rare',     com:45,dip:60,sci:75,eng:95,med:30,tac:50,desc:'VISOR-equipped genius. Can fix any ship, anywhere, anytime.'},
+  worf:   {n:'Worf',                   role:'Security Chief',  spec:'Tactical',    era:'TNG',rar:'rare',     com:95,dip:40,sci:40,eng:35,med:25,tac:98,desc:'Today is a good day to die. The greatest warrior in Starfleet.'},
+  troi:   {n:'Deanna Troi',            role:'Counselor',       spec:'Diplomacy',   era:'TNG',rar:'uncommon', com:30,dip:90,sci:55,eng:25,med:70,tac:35,desc:'Betazoid empath. Reads emotions and rooms perfectly.'},
+  riker:  {n:'William T. Riker',       role:'First Officer',   spec:'Command',     era:'TNG',rar:'rare',     com:85,dip:78,sci:55,eng:50,med:35,tac:80,desc:'Number One. Jazz, poker, audacity. Every captain wants a Riker.'},
+  crusher:{n:'Beverly Crusher',        role:'Chief Medical',   spec:'Medical',     era:'TNG',rar:'rare',     com:40,dip:72,sci:78,eng:30,med:96,tac:35,desc:'Brilliant physician, dancer, playwright. The heart of the Enterprise.'},
+  sisko:  {n:'Benjamin Sisko',         role:'Commander',       spec:'Command',     era:'DS9',rar:'legendary',com:85,dip:80,sci:65,eng:55,med:40,tac:82,desc:"The Emissary. Commander of DS9. Plays for keeps."},
+  kira:   {n:'Kira Nerys',             role:'First Officer',   spec:'Tactical',    era:'DS9',rar:'rare',     com:88,dip:55,sci:45,eng:40,med:30,tac:90,desc:'Bajoran resistance fighter. Fiercely loyal. Formidable.'},
+  dax:    {n:'Jadzia Dax',             role:'Science Officer', spec:'Science',     era:'DS9',rar:'rare',     com:70,dip:75,sci:90,eng:60,med:55,tac:72,desc:'300+ years of joined Trill experience. Brilliant across disciplines.'},
+  bashir: {n:'Julian Bashir',          role:'Chief Medical',   spec:'Medical',     era:'DS9',rar:'uncommon', com:35,dip:68,sci:82,eng:30,med:94,tac:38,desc:'Genetically enhanced doctor. Dedicated and extraordinarily skilled.'},
+  odo:    {n:'Odo',                    role:'Security Chief',  spec:'Tactical',    era:'DS9',rar:'rare',     com:80,dip:65,sci:55,eng:45,med:30,tac:88,desc:'A Changeling who chose justice over his own people.'},
+  obrien: {n:"Miles O'Brien",          role:'Chief of Ops',    spec:'Engineering', era:'DS9',rar:'uncommon', com:60,dip:55,sci:60,eng:94,med:28,tac:62,desc:"Every engineer's favorite engineer. Can fix anything under fire."},
+  janeway:{n:'Kathryn Janeway',        role:'Captain',         spec:'Command',     era:'VOY',rar:'legendary',com:78,dip:82,sci:80,eng:60,med:45,tac:75,desc:'Coffee, black. Brought Voyager 70,000 light years home. Unbreakable.'},
+  seven:  {n:'Seven of Nine',          role:'Astrometrics',    spec:'Science',     era:'VOY',rar:'legendary',com:80,dip:45,sci:97,eng:88,med:60,tac:78,desc:'Former Borg. Perfection. Incomparable analytical and tactical mind.'},
+  doctor: {n:'The Doctor (EMH)',       role:'Chief Medical',   spec:'Medical',     era:'VOY',rar:'rare',     com:30,dip:65,sci:80,eng:45,med:98,tac:30,desc:'Please state the nature of your medical emergency. Essential.'},
+  torres: {n:"B'Elanna Torres",        role:'Chief Engineer',  spec:'Engineering', era:'VOY',rar:'rare',     com:70,dip:45,sci:65,eng:95,med:25,tac:68,desc:'Half-Klingon engineer. Brilliant, explosive, irreplaceable.'},
+  tuvok:  {n:'Tuvok',                  role:'Tactical/Sec',    spec:'Tactical',    era:'VOY',rar:'rare',     com:65,dip:70,sci:75,eng:45,med:30,tac:92,desc:"Vulcan logic applied to tactical genius. Janeway's security chief."},
+  burnham:{n:'Michael Burnham',        role:'Captain',         spec:'Command',     era:'DIS',rar:'legendary',com:82,dip:75,sci:85,eng:55,med:40,tac:80,desc:'First mutineer to become captain. Has saved the galaxy multiple times.'},
+  pike:   {n:'Christopher Pike',       role:'Captain',         spec:'Command',     era:'SNW',rar:'legendary',com:80,dip:88,sci:72,eng:50,med:45,tac:78,desc:'The finest captain you never knew. Strange new worlds call to him.'},
+  una:    {n:'Una Chin-Riley',         role:'First Officer',   spec:'Command',     era:'SNW',rar:'rare',     com:75,dip:70,sci:70,eng:68,med:55,tac:72,desc:'Number One. Unwavering and principled. Backbone of any crew.'},
+  tpol:   {n:"T'Pol",                  role:'Science Officer', spec:'Science',     era:'ENT',rar:'rare',     com:55,dip:72,sci:88,eng:60,med:50,tac:68,desc:"Vulcan science officer on Earth's first deep-space ship."},
+  lorca:  {n:'Gabriel Lorca',          role:'Captain',         spec:'Tactical',    era:'DIS',rar:'rare',     com:90,dip:50,sci:60,eng:55,med:25,tac:95,desc:'Brilliant and ruthless. Whatever it takes to win. Complicated.'},
+};
+const SPECIES={
+  vulcan:    {n:'Vulcan',    align:'ally',   trait:'Logic & Telepathy',   bonus:'+20 Science',      hostile:false,desc:"Masters of Surak's logic. Founding Federation members."},
+  klingon:   {n:'Klingon',  align:'rival',  trait:'Honor in Battle',     bonus:'+20 Combat',       hostile:true, desc:'Warriors above all. Respect is earned in battle — never given.'},
+  romulan:   {n:'Romulan',  align:'hostile',trait:'Cunning & Deception', bonus:'Cloaking intel',   hostile:true, desc:'Scheming cousins of the Vulcans. Trust nothing they say.'},
+  bajoran:   {n:'Bajoran',  align:'ally',   trait:'Spiritual Faith',     bonus:'+15 Diplomacy',    hostile:false,desc:'Deeply spiritual survivors of Cardassian occupation.'},
+  cardassian:{n:'Cardassian',align:'rival', trait:'Order & Bureaucracy', bonus:'Tactical intel',   hostile:true, desc:'Military, obsessed with order. Every interaction is a negotiation.'},
+  ferengi:   {n:'Ferengi',  align:'neutral',trait:'Rules of Acquisition',bonus:'+80 Credits',      hostile:false,desc:'Business above all. Their 285 Rules of Acquisition govern everything.'},
+  andorian:  {n:'Andorian', align:'ally',   trait:'Warrior-Diplomats',   bonus:'+10 Tac +10 Dip',  hostile:false,desc:'Blue-skinned warriors with a fierce honor code. Federation founders.'},
+  borg:      {n:'Borg',     align:'hostile',trait:'Assimilation',        bonus:'+80 XP (tech)',    hostile:true, desc:'We are the Borg. Resistance is futile.'},
+  betazoid:  {n:'Betazoid', align:'ally',   trait:'Full Telepathy',      bonus:'+25 Diplomacy',    hostile:false,desc:'Full telepaths — deception is impossible with them.'},
+  trill:     {n:'Trill',    align:'ally',   trait:'Symbiont Wisdom',     bonus:'+15 Sci +10 Dip',  hostile:false,desc:'Joined Trills carry centuries of symbiont knowledge.'},
+  dominion:  {n:'Dominion', align:'hostile',trait:'Founder Supremacy',   bonus:'+60 XP (intel)',   hostile:true, desc:"The Founders believe order must be imposed on the universe's chaos."},
+  orion:     {n:'Orion',    align:'neutral',trait:'Syndicate Trade',     bonus:'+50 Credits',      hostile:false,desc:'The Orion Syndicate operates in every sector of known space.'},
+};
+const RANKS=[
+  {name:'Ensign',       abbr:'ENS',   xp:0},
+  {name:'Lieutenant JG',abbr:'LT.JG', xp:100},
+  {name:'Lieutenant',   abbr:'LT',    xp:250},
+  {name:'Lt. Commander',abbr:'LCMDR', xp:500},
+  {name:'Commander',    abbr:'CMDR',  xp:900},
+  {name:'Captain',      abbr:'CAPT',  xp:1400},
+  {name:'Commodore',    abbr:'COMO',  xp:2000},
+  {name:'Rear Admiral', abbr:'R.ADM', xp:2800},
+  {name:'Vice Admiral', abbr:'V.ADM', xp:3800},
+  {name:'Admiral',      abbr:'ADM',   xp:5000},
+  {name:'Fleet Admiral',abbr:'FL.ADM',xp:7000},
+];
+const STYLS={federation:{bg:'#06102a',border:'#1a2a6e',tc:'#AACCFF'},neutral:{bg:'#151300',border:'#333200',tc:'#CCCC55'},klingon:{bg:'#1e0000',border:'#660000',tc:'#FF6666'},romulan:{bg:'#001e00',border:'#005500',tc:'#66FF66'},cardassian:{bg:'#1e0900',border:'#662200',tc:'#FF9944'},anomaly:{bg:'#1a0e1a',border:'#553355',tc:'#FF77FF'},deep_space:{bg:'#040409',border:'#0e0e24',tc:'#5555AA'},unknown:{bg:'#050515',border:'#0f0f28',tc:'#2a2a55'}};
+const SICO={federation:'🔵',neutral:'⚫',klingon:'🔴',romulan:'🟢',cardassian:'🟠',anomaly:'🌀',deep_space:'✨',unknown:'❓'};
+const SNAMES=['Sol System','Alpha Centauri','Vulcan System','Betazed','Andoria','Neutral Zone α','Neutral Zone β','Donatu V','Khitomer',"Qo'noS",'Romulus','Remus','The Badlands','Mutara Sector','Veridian III','Barzan Wormhole','Dyson Sphere','Briar Patch','Unknown Expanse','Void Sector','Cardassian Union','Occupied Bajor','Valo System','Dorvan V','Gamma Quadrant'];
+const STYPES=['federation','federation','federation','federation','federation','neutral','neutral','neutral','klingon','klingon','romulan','romulan','anomaly','deep_space','deep_space','deep_space','deep_space','anomaly','unknown','unknown','cardassian','cardassian','neutral','neutral','unknown'];
+const ENCS=[
+  {type:'DISTRESS SIGNAL',icon:'🆘',T:['Federation vessel in distress','Civilian transport under attack','Medical emergency — colony ship','Survivors in debris field'],D:['Long-range sensors detect a fading distress call. Life signs are critical.','A civilian transport reports weapons fire. 847 life signs aboard.','A colony ship has catastrophic failures. Your CMO prepares sickbay.','Life signs scattered across a debris field. Someone survived.'],O:[{lbl:'🚀 ENGAGE WARP — Deploy immediately',sk:'tac',sN:'Tactical',sT:'Swift response saved lives. Survivors aboard and stable.',fT:'Arrived too late. Damage done before you could intervene.'},{lbl:'📡 HAIL — Assess the situation first',sk:'dip',sN:'Diplomacy',sT:'Calm assessment enabled optimal rescue. All hands saved.',fT:'Communication delay cost lives. Casualties unavoidable.'},{lbl:'🔬 SCAN — Full sensor sweep',sk:'sci',sN:'Science',sT:'Sensors found the most efficient approach. Success.',fT:'Scans inconclusive. Had to improvise with mixed results.'}],xp:[30,52,72],cC:.25,sC:.05,spC:.05,cr:[30,65]},
+  {type:'FIRST CONTACT',icon:'🌐',T:['Unidentified vessel approaching','Signal from pre-warp civilization','Unknown life form detected','Alien probe incoming'],D:['An unidentified vessel of unknown design approaches. No hails. Origins unknown.','Sensors detect a pre-warp civilization. A potentially historic moment.','Sensors register a life form matching nothing in the database.','An alien probe of extraordinary sophistication locked onto your vessel.'],O:[{lbl:'📡 HAIL — Extend diplomatic greeting',sk:'dip',sN:'Diplomacy',sT:"First contact! A new civilization enters the Federation's awareness.",fT:'Hail misinterpreted as hostile. They retreated.'},{lbl:'🔬 SCAN — Study them before contact',sk:'sci',sN:'Science',sT:'Analysis revealed the key to communication. Historic!',fT:'They detected scans and grew suspicious. Opportunity missed.'},{lbl:'⚔️ ENGAGE — Shields up, proceed carefully',sk:'tac',sN:'Tactical',sT:'Defensive posture read as respect. They responded in kind.',fT:'Interpreted as aggression. They fled the sector.'}],xp:[40,65,90],cC:.1,sC:.1,spC:.7,cr:[20,50]},
+  {type:'HOSTILE ENCOUNTER',icon:'⚔️',T:['Klingon war vessel — weapons hot','Romulan warbird decloaking','Borg cube detected','Cardassian patrol — hostile intent'],D:["A Klingon Bird-of-Prey drops out of warp. Weapons charged. They demand surrender.",'A Romulan warbird decloaks off the port bow. Disruptors powering up.','Long-range sensors confirm: a Borg cube on intercept course.','Three Cardassian warships surround your vessel.'],O:[{lbl:'⚔️ ENGAGE — Battle stations!',sk:'tac',sN:'Tactical',sT:'Victory! Tactical crew brilliant. Enemy retreats.',fT:'Heavy damage. Hull needs significant repair.'},{lbl:'📡 NEGOTIATE — Stand down alert',sk:'dip',sN:'Diplomacy',sT:'Against all odds, words turned the tide. No shots fired.',fT:'They laughed at your hail. Shields barely absorbed the first shot.'},{lbl:'🚀 EVASIVE — Get us out of here!',sk:'eng',sN:'Engineering',sT:"Perfect maneuver. Slipped away before they locked on.",fT:"They followed. You escaped — barely."}],xp:[55,85,112],cC:.15,sC:.15,spC:.3,cr:[50,105]},
+  {type:'SPATIAL ANOMALY',icon:'🌀',T:['Anomaly off the port bow','Temporal disturbance detected','Quantum singularity forming','Unexplained energy readings'],D:['Your science officer reports an unprecedented anomaly. Readings are off the charts.','Chronometers behave erratically throughout the ship. Temporal disturbance suspected.','A quantum singularity forms at the edge of the sector. Extraordinary — and dangerous.','Energy readings matching nothing in the database.'],O:[{lbl:'🔬 INVESTIGATE — Full scientific survey',sk:'sci',sN:'Science',sT:'Remarkable discovery! Sensor logs advance Starfleet science.',fT:'Anomaly destabilized before readings were complete.'},{lbl:'🚀 NAVIGATE — Chart a course through it',sk:'eng',sN:'Engineering',sT:'Incredible piloting. Emerged with extraordinary sensor data.',fT:'Made it through — but not cleanly. Repairs needed.'},{lbl:'⚠️ WITHDRAW — Safety first',sk:'tac',sN:'Tactical',sT:'Smart call. Long-range sensors still captured significant data.',fT:'Withdrew safely but captured almost no useful readings.'}],xp:[35,58,82],cC:.05,sC:.25,spC:.15,cr:[20,55]},
+  {type:'DERELICT VESSEL',icon:'🔮',T:['Derelict on long-range sensors','Abandoned station detected','Ghost ship adrift','Pre-Federation wreck discovered'],D:['Long-range sensors locate a derelict vessel tumbling through space.','An old station runs on emergency power. No life signs — but remarkable readings.','A ghost ship runs silent, drifting toward a nearby star.','A pre-Federation vessel of historical significance.'],O:[{lbl:'🚀 BOARD IT — Lead an away team',sk:'eng',sN:'Engineering',sT:'Jackpot! Recovered technology, components, and a warp core.',fT:'Derelict was booby-trapped. Team escaped with little of value.'},{lbl:'🔬 SCAN — External analysis first',sk:'sci',sN:'Science',sT:'Thorough scan revealed something extraordinary within.',fT:'Scans only completed partially before the vessel drifted away.'},{lbl:'📡 LOG — Document and report',sk:'dip',sN:'Diplomacy',sT:'Command dispatches recovery team. Your log earns commendations.',fT:'Vessel drifted into Romulan space before Command could act.'}],xp:[45,68,97],cC:.1,sC:.5,spC:.05,cr:[55,112]},
+];
+
+// ═══════════ STATE ═══════════
+const DS=()=>({xp:0,energy:100,maxEnergy:100,credits:500,ships:['reliant'],activeShip:'reliant',crew:['kirk'],activeCrew:['kirk'],species:[],sectors:Array.from({length:25},(_,i)=>({id:i,explored:i===0})),currentSector:0,log:['Stardate 2401.1 — Your command begins, Admiral. The galaxy awaits.'],missions:0,encounters:0});
+let S,CF='ALL';
+function load(){try{const r=localStorage.getItem('stif4');S=r?JSON.parse(r):DS();['credits','missions','encounters'].forEach(k=>{if(!S[k])S[k]=0;});}catch(e){S=DS();}}
+function save(){localStorage.setItem('stif4',JSON.stringify(S));}
+function getRank(xp=S.xp){let r=RANKS[0];for(const rk of RANKS)if(xp>=rk.xp)r=rk;return r;}
+function getNext(xp=S.xp){for(const rk of RANKS)if(xp<rk.xp)return rk;return null;}
+function addXP(a){const pv=getRank();S.xp+=a;const cr=getRank();if(cr.name!==pv.name)flashRank(cr.name);save();updH();}
+function flashRank(n){const b=$('rfb');b.textContent=`★ PROMOTED: ${n.toUpperCase()} ★`;b.style.display='block';setTimeout(()=>b.style.display='none',3500);}
+function updH(){const rk=getRank();$('he').textContent=S.energy;$('hc').textContent=S.credits;$('hr').textContent=rk.abbr;$('hx').textContent=S.xp;const pct=(S.energy/S.maxEnergy)*100,ef=$('ef');ef.style.width=pct+'%';ef.style.background=pct>40?'linear-gradient(90deg,var(--t),var(--t2))':pct>15?'linear-gradient(90deg,var(--y),var(--y2))':'linear-gradient(90deg,var(--r),var(--r2))';}
+function $(id){return document.getElementById(id);}
+function nav(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));$('screen-'+n).classList.add('active');['map','fleet','crew','lcars'].forEach((nm,i)=>{if(nm===n)document.querySelectorAll('.nb')[i].classList.add('active');});if(n==='map')renderMap();else if(n==='fleet')renderFleet();else if(n==='crew')renderCrew();else renderLCARS();}
+
+// ═══════════ HELP ═══════════
+function openHelp(){$('hmod').classList.add('open');}
+function closeHelp(){$('hmod').classList.remove('open');}
+
+// ═══════════ MAP ═══════════
+function renderMap(){$('mstat').innerHTML=`▶ <span style="color:var(--o2)">${SNAMES[S.currentSector]}</span> &nbsp;|&nbsp; ⚡<span style="color:var(--t2)">${S.energy}</span> &nbsp;|&nbsp; ₪<span style="color:var(--y2)">${S.credits}</span>`;$('ggrid').innerHTML=S.sectors.map((sec,i)=>{const cur=i===S.currentSector,st=STYLS[sec.explored?STYPES[i]:'unknown'];if(!sec.explored)return`<div class="sec" style="background:#030314;border:1px solid #0f0f2a;" onclick="warpTo(${i})"><div class="sico" style="font-size:11px;opacity:0.2">✦</div><div class="slbl" style="color:#1a1a44;font-size:6px">DARK</div></div>`;return`<div class="sec ${cur?'cur':''}" style="background:${st.bg};border:1px solid ${st.border};" onclick="${cur?'':` warpTo(${i})`}"><div class="sico">${SICO[STYPES[i]]}</div><div class="slbl" style="color:${st.tc}">${SNAMES[i].split(' ').slice(0,2).join(' ')}</div>${cur?'<div class="shere">◉ HERE</div>':''}</div>`;}).join('');$('clog').innerHTML=S.log.slice(0,8).map(l=>`<div class="ll">${l}</div>`).join('');}
+function warpTo(i){if(i===S.currentSector)return;const cost=S.sectors[i].explored?10:15;if(S.energy<cost){addLog('⚠ Insufficient energy. Explore closer sectors or dock at a Starbase.');renderMap();return;}S.energy-=cost;S.currentSector=i;if(!S.sectors[i].explored){S.sectors[i].explored=true;addLog(`🚀 Warped to ${SNAMES[i]}. Uncharted space — encounter incoming!`);save();updH();setTimeout(()=>trigEnc(i),400);}else{addLog(`🚀 Warped to ${SNAMES[i]}.`);save();updH();renderMap();}}
+function addLog(e){const sd=(2401+(S.xp/1000)).toFixed(1);S.log.unshift(`SD ${sd} — ${e}`);if(S.log.length>30)S.log.pop();}
+
+// ═══════════ ENCOUNTERS ═══════════
+let curEnc=null;
+function trigEnc(si){S.encounters++;const st=STYPES[si];let pool=[...ENCS];if(['klingon','romulan','cardassian'].includes(st))pool=[ENCS[2],ENCS[2],...pool];else if(st==='anomaly')pool=[ENCS[3],ENCS[3],ENCS[4],...pool];else if(st==='federation')pool=[ENCS[0],ENCS[0],ENCS[1],...pool];else pool=[ENCS[1],ENCS[4],...pool];const tm=pool[Math.floor(Math.random()*pool.length)];const ix=Math.floor(Math.random()*tm.T.length);curEnc={tm,title:tm.T[ix],desc:tm.D[ix],si,resolved:false};openEnc();}
+function crewSk(){const sk={com:0,dip:0,sci:0,eng:0,med:0,tac:0};let n=0;S.activeCrew.forEach(id=>{const c=CREW[id];if(!c)return;n++;Object.keys(sk).forEach(k=>sk[k]+=c[k]);});if(n>0)Object.keys(sk).forEach(k=>sk[k]=Math.round(sk[k]/n));return sk;}
+function openEnc(){const enc=curEnc,tm=enc.tm,sh=SHIPS[S.activeShip],sk=crewSk();$('etype').textContent=`${tm.icon} ${tm.type}`;$('etitle').textContent=enc.title;$('edesc').textContent=enc.desc;$('outcome').classList.remove('vis');$('eopts').style.display='';$('eopts').innerHTML=tm.O.map((o,i)=>{let v=sk[o.sk]||0;if(o.sk==='tac')v=Math.round((v+sh.wp)/2);if(o.sk==='sci')v=Math.round((v+sh.sen)/2);if(o.sk==='eng')v=Math.round((v+sh.sh)/2);const ch=Math.min(92,Math.max(18,v));return`<button class="obtn" onclick="resolve(${i},${v})"><span class="olbl">${o.lbl}</span><div class="ometa">${o.sN}: ${v} &nbsp;|&nbsp; Success: ~${ch}%</div></button>`;}).join('');$('emod').classList.add('open');}
+function resolve(oi,sv){if(curEnc.resolved)return;curEnc.resolved=true;const tm=curEnc.tm,o=tm.O[oi];$('eopts').style.display='none';const roll=Math.random()*100,thr=Math.min(88,Math.max(22,sv));const suc=roll<=thr,part=!suc&&roll<=thr+14;let rwds=[],xg=0,rcls,rlbl,btxt;if(suc){rlbl='✓ MISSION SUCCESS';rcls='oS';xg=tm.xp[2];btxt=o.sT;const cr=tm.cr[0]+Math.floor(Math.random()*(tm.cr[1]-tm.cr[0]));S.credits+=cr;rwds.push(`+${cr} Credits`);rwds.push(`+${xg} XP`);if(Math.random()<tm.cC){const nc=nCrew();if(nc){S.crew.push(nc);rwds.push(`🎉 RECRUITED: ${CREW[nc].n}`);addLog(`★ Recruited ${CREW[nc].n}!`);}}if(Math.random()<tm.sC){const ns=nShip();if(ns){S.ships.push(ns);rwds.push(`🚀 DISCOVERED: ${SHIPS[ns].n}`);addLog(`★ Added ${SHIPS[ns].n} to fleet!`);}}if(Math.random()<tm.spC){const nsp=nSpec();if(nsp){S.species.push(nsp);const bonus=SPECIES[nsp].bonus;if(bonus.includes('Credits')){const b=parseInt(bonus.match(/\d+/)[0]);S.credits+=b;}if(bonus.includes('XP')){const b=parseInt(bonus.match(/\d+/)[0]);S.xp+=b;}rwds.push(`🌐 FIRST CONTACT: ${SPECIES[nsp].n}`);addLog(`★ First contact: ${SPECIES[nsp].n}!`);}}}else if(part){rlbl='~ PARTIAL SUCCESS';rcls='oP';xg=tm.xp[1];btxt=o.sT+' Though not without complications.';const cr=Math.floor(tm.cr[0]*.5);S.credits+=cr;rwds.push(`+${cr} Credits`);rwds.push(`+${xg} XP`);}else{rlbl='✗ MISSION FAILED';rcls='oF';xg=tm.xp[0];btxt=o.fT;const pen=5+Math.floor(Math.random()*10);S.energy=Math.max(0,S.energy-pen);rwds.push(`+${xg} XP (lessons)`);rwds.push(`-${pen} Energy`);}S.missions++;addLog(`${tm.icon} ${curEnc.title}: ${suc?'Success':part?'Partial':'Failed'}. +${xg} XP`);addXP(xg);save();updH();const res=$('ores');res.textContent=rlbl;res.className='ores '+rcls;$('otxt').textContent=btxt;$('rwds').innerHTML=rwds.map(r=>`<div class="rw">${r}</div>`).join('');$('outcome').classList.add('vis');}
+function nCrew(){const a=Object.keys(CREW),u=a.filter(id=>!S.crew.includes(id));return u.length?u[Math.floor(Math.random()*Math.min(u.length,8))]:null;}
+function nShip(){const a=Object.keys(SHIPS),u=a.filter(id=>!S.ships.includes(id));return u.length?u[Math.floor(Math.random()*u.length)]:null;}
+function nSpec(){const a=Object.keys(SPECIES),u=a.filter(id=>!S.species.includes(id));return u.length?u[Math.floor(Math.random()*u.length)]:null;}
+function closeEnc(){$('emod').classList.remove('open');$('eopts').style.display='';renderMap();}
+
+// ═══════════ FLEET ═══════════
+const RC={legendary:'leg',rare:'rar',uncommon:'unc',common:'com'};
+const SC={Command:'var(--o2)',Science:'var(--b2)',Medical:'var(--g2)',Engineering:'var(--y2)',Tactical:'var(--r2)',Diplomacy:'var(--v2)'};
+function sbars(s){return[{l:'Shields',v:s.sh,c:'var(--b)'},{l:'Weapons',v:s.wp,c:'var(--r)'},{l:'Warp',v:Math.min(100,s.warp*10),c:'var(--t)'},{l:'Sensors',v:s.sen,c:'var(--g)'}].map(b=>`<div class="sbr"><div class="sbl">${b.l}</div><div class="sbt"><div class="sbf" style="width:${b.v}%;background:${b.c}"></div></div><div class="sbv" style="color:${b.c}">${Math.round(b.v)}</div></div>`).join('');}
+function renderFleet(){$('fcount').textContent=S.ships.length;$('ftotal').textContent=Object.keys(SHIPS).length;$('aship').innerHTML=scard(S.activeShip,true,true);$('flist').innerHTML=S.ships.map(id=>scard(id,id===S.activeShip,false)).join('');}
+function scard(id,active,detail){
+  const s=SHIPS[id],svg=SHIP_SPRITES[id]||'';
+  return`<div class="card ${active?'ca':''}" onclick="setShip('${id}')">
+    <div class="sprite" style="width:${detail?60:44}px;height:${detail?60:44}px;min-width:${detail?60:44}px">${svg}</div>
+    <div class="cbody">
+      <div class="cname">${s.n} <span style="color:var(--dim);font-size:8px">${s.reg}</span></div>
+      <div class="csub">${s.cls} <span class="tag tag-${s.era.toLowerCase()}">${s.era}</span> <span class="${RC[s.rar]}">${s.rar.toUpperCase()}</span></div>
+      <div class="cdesc">${s.desc}</div>
+      ${detail?sbars(s):''}
+      <div class="cstats">
+        <span class="sp" style="color:var(--b2)">🛡${s.sh}</span>
+        <span class="sp" style="color:var(--r2)">⚔${s.wp}</span>
+        <span class="sp" style="color:var(--t2)">🚀W${s.warp}</span>
+        <span class="sp" style="color:var(--g2)">📡${s.sen}</span>
+        <span class="sp" style="color:var(--v2)">👥${s.cap}</span>
+      </div>
+    </div>
+    ${active?'<div class="bdg bdg-o">ACTIVE</div>':''}
+  </div>`;
+}
+function setShip(id){S.activeShip=id;S.activeCrew=S.activeCrew.slice(0,SHIPS[id].cap);save();renderFleet();}
+
+// ═══════════ CREW ═══════════
+const SPECS=['ALL','Command','Science','Medical','Engineering','Tactical','Diplomacy'];
+function renderCrew(){const cap=SHIPS[S.activeShip].cap;$('cc').textContent=S.activeCrew.length;$('ccap').textContent=cap;$('tc').textContent=S.crew.length;$('tcmax').textContent=Object.keys(CREW).length;$('acrew').innerHTML=S.activeCrew.length?S.activeCrew.map(id=>ccard(id)).join(''):'<div class="empty">No crew assigned. Tap officers below to add them to the bridge.</div>';$('ftabs').innerHTML=SPECS.map(sp=>`<div class="ftab ${CF===sp?'act':''}" onclick="setF('${sp}')">${sp}</div>`).join('');const list=S.crew.filter(id=>CF==='ALL'||CREW[id].spec===CF);$('crewlist').innerHTML=list.length?list.map(id=>ccard(id)).join(''):'<div class="empty">No officers in this specialization yet.</div>';}
+function setF(f){CF=f;renderCrew();}
+function ccard(id){
+  const c=CREW[id],asgn=S.activeCrew.includes(id),sc=SC[c.spec]||'var(--p)';
+  const pcfg=CC[id]||{bg:'#111133',sk:'#FFCC99',hr:'#442211',hs:'short',ey:'#222266',un:'#CC2211'};
+  return`<div class="card ${asgn?'cr':''}" onclick="togCrew('${id}')">
+    <div class="sprite">${portrait(pcfg)}</div>
+    <div class="cbody">
+      <div class="cname">${c.n}</div>
+      <div class="csub">${c.role} <span style="color:${sc}">◈${c.spec}</span> <span class="tag tag-${c.era.toLowerCase()}">${c.era}</span> <span class="${RC[c.rar]}">${c.rar.toUpperCase()}</span></div>
+      <div class="cdesc">${c.desc}</div>
+      <div class="cstats">
+        <span class="sp" style="color:var(--o2)">⭐${c.com}</span>
+        <span class="sp" style="color:var(--v2)">🤝${c.dip}</span>
+        <span class="sp" style="color:var(--b2)">🔬${c.sci}</span>
+        <span class="sp" style="color:var(--y2)">⚙${c.eng}</span>
+        <span class="sp" style="color:var(--g2)">⚕${c.med}</span>
+        <span class="sp" style="color:var(--r2)">🎯${c.tac}</span>
+      </div>
+    </div>
+    ${asgn?'<div class="bdg bdg-g">ON BRIDGE</div>':''}
+  </div>`;
+}
+function togCrew(id){const cap=SHIPS[S.activeShip].cap;if(S.activeCrew.includes(id))S.activeCrew=S.activeCrew.filter(x=>x!==id);else{if(S.activeCrew.length>=cap)S.activeCrew.shift();S.activeCrew.push(id);}save();renderCrew();}
+
+// ═══════════ LCARS ═══════════
+function dock(){if(S.credits<50){addLog('⚠ Insufficient credits to dock. Need ₪50.');renderLCARS();return;}S.credits-=50;S.energy=Math.min(S.maxEnergy,S.energy+40);addLog('⚓ Docked at Starbase. Energy restored. +40 ⚡');save();updH();renderLCARS();}
+function renderLCARS(){
+  const rk=getRank(),nxt=getNext(),pct=nxt?Math.min(100,((S.xp-rk.xp)/(nxt.xp-rk.xp))*100):100;
+  $('admcard').innerHTML=`<div class="admcard">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:11px">
+      <div style="font-size:42px">🖖</div>
+      <div><div style="font-family:'Orbitron',sans-serif;font-size:17px;color:var(--o2)">${rk.name}</div><div style="font-size:9px;color:var(--dim)">Starfleet Command — Deep Space Operations</div></div>
+    </div>
+    <button class="refill-btn" onclick="dock()">⚓ DOCK AT STARBASE — Restore 40 ⚡ for ₪50</button>
+    <div class="sgrid">
+      <div class="scell" style="border-color:var(--o)"><div style="font-size:8px;color:var(--dim)">TOTAL XP</div><div style="color:var(--o2);font-weight:700;font-size:14px">${S.xp}</div></div>
+      <div class="scell" style="border-color:var(--y)"><div style="font-size:8px;color:var(--dim)">CREDITS</div><div style="color:var(--y2);font-weight:700;font-size:14px">₪${S.credits}</div></div>
+      <div class="scell" style="border-color:var(--t)"><div style="font-size:8px;color:var(--dim)">MISSIONS</div><div style="color:var(--t2);font-weight:700;font-size:14px">${S.missions}</div></div>
+      <div class="scell" style="border-color:var(--b)"><div style="font-size:8px;color:var(--dim)">FLEET</div><div style="color:var(--b2);font-weight:700;font-size:14px">${S.ships.length}/${Object.keys(SHIPS).length}</div></div>
+      <div class="scell" style="border-color:var(--g)"><div style="font-size:8px;color:var(--dim)">CREW</div><div style="color:var(--g2);font-weight:700;font-size:14px">${S.crew.length}/${Object.keys(CREW).length}</div></div>
+      <div class="scell" style="border-color:var(--v)"><div style="font-size:8px;color:var(--dim)">SPECIES</div><div style="color:var(--v2);font-weight:700;font-size:14px">${S.species.length}/${Object.keys(SPECIES).length}</div></div>
+      <div class="scell" style="border-color:var(--pk)"><div style="font-size:8px;color:var(--dim)">SECTORS</div><div style="color:var(--pk2);font-weight:700;font-size:14px">${S.sectors.filter(s=>s.explored).length}/25</div></div>
+      <div class="scell" style="border-color:var(--r)"><div style="font-size:8px;color:var(--dim)">ENCOUNTERS</div><div style="color:var(--r2);font-weight:700;font-size:14px">${S.encounters}</div></div>
+    </div>
+    ${nxt?`<div style="font-size:8px;color:var(--dim);margin-bottom:3px">${nxt.xp-S.xp} XP to ${nxt.name}</div>`:`<div style="font-size:9px;color:var(--o2)">★ Maximum rank achieved ★</div>`}
+    <div class="xptrack"><div class="xpfill" style="width:${pct}%"></div></div>
+  </div>`;
+  $('spcount').textContent=S.species.length;$('sptotal').textContent=Object.keys(SPECIES).length;
+  $('splist').innerHTML=Object.entries(SPECIES).map(([id,sp])=>{const kn=S.species.includes(id),ac=sp.align==='ally'?'kn':sp.align==='hostile'?'kn ho':'kn ne';return`<div class="spcard ${kn?ac:''}"><div class="sprite" style="width:40px;height:40px;min-width:40px">${kn?SPEC_ICONS[id]||'':SPEC_ICONS[id]?`<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" fill="#050515" rx="4"/><text x="20" y="26" text-anchor="middle" font-size="20" fill="#1a1a44">?</text></svg>`:''}</div><div>${kn?`<div class="spname">${sp.n}</div><div style="font-size:9px;color:#665566;margin-bottom:3px">${sp.align.toUpperCase()} | ${sp.trait}</div><div style="font-size:10px;color:#CCBBAA;margin-bottom:3px">${sp.desc}</div><div style="font-size:9px;color:var(--g2)">✦ ${sp.bonus}</div>`:`<div style="font-family:'Orbitron',sans-serif;font-size:10px;color:#2a2a55">UNKNOWN SPECIES</div><div style="font-size:10px;color:#1a1a44;margin-top:3px">Make first contact to unlock this database entry.</div>`}</div></div>`;}).join('');
+  $('fulllog').innerHTML=S.log.map(l=>`<div class="ll">${l}</div>`).join('');
+}
+
+// INIT
+load();updH();renderMap();
+// Show help on first visit
+if(!localStorage.getItem('stif4_seen')){localStorage.setItem('stif4_seen','1');setTimeout(openHelp,600);}
+</script>
+</body>
+</html>
