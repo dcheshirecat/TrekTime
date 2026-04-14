@@ -1,0 +1,236 @@
+name: Build Star Trek APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Generate Android project
+        run: |
+          mkdir -p app/src/main/assets
+          mkdir -p app/src/main/res/mipmap-hdpi
+          mkdir -p app/src/main/res/mipmap-mdpi
+          mkdir -p app/src/main/res/mipmap-xhdpi
+          mkdir -p app/src/main/res/mipmap-xxhdpi
+          mkdir -p app/src/main/res/mipmap-xxxhdpi
+          mkdir -p app/src/main/res/values
+
+          cp index.html app/src/main/assets/index.html
+
+          # App icon (LCARS orange star in black circle)
+          cat > /tmp/icon.svg << 'SVGEOF'
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">
+            <circle cx="54" cy="54" r="54" fill="#000010"/>
+            <circle cx="54" cy="54" r="50" fill="#000010" stroke="#FF9900" stroke-width="3"/>
+            <!-- LCARS corner bumper top left -->
+            <rect x="8" y="8" width="28" height="28" rx="14" ry="0" fill="#FF9900"/>
+            <rect x="22" y="8" width="14" height="14" fill="#000010"/>
+            <!-- Starfleet delta -->
+            <polygon points="54,18 66,72 54,62 42,72" fill="#FF9900"/>
+            <polygon points="54,18 66,72 54,65" fill="#FFCC99" opacity="0.5"/>
+            <!-- Bottom LCARS bar -->
+            <rect x="8" y="82" width="92" height="12" rx="6" fill="#FF9900"/>
+            <rect x="48" y="82" width="52" height="12" fill="#FF9900"/>
+          </svg>
+          SVGEOF
+
+          # Convert SVG to PNG icons using ImageMagick
+          sudo apt-get install -y librsvg2-bin > /dev/null 2>&1
+          rsvg-convert -w 48  -h 48  /tmp/icon.svg > app/src/main/res/mipmap-mdpi/ic_launcher.png
+          rsvg-convert -w 72  -h 72  /tmp/icon.svg > app/src/main/res/mipmap-hdpi/ic_launcher.png
+          rsvg-convert -w 96  -h 96  /tmp/icon.svg > app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          rsvg-convert -w 144 -h 144 /tmp/icon.svg > app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          rsvg-convert -w 192 -h 192 /tmp/icon.svg > app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+
+      - name: Write Android source files
+        run: |
+
+          cat > app/src/main/AndroidManifest.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              package="com.dcheshirecat.infinitefrontier">
+              <uses-permission android:name="android.permission.INTERNET"/>
+              <application
+                  android:label="Infinite Frontier"
+                  android:icon="@mipmap/ic_launcher"
+                  android:theme="@style/AppTheme"
+                  android:hardwareAccelerated="true"
+                  android:allowBackup="true">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:configChanges="orientation|screenSize|keyboardHidden"
+                      android:windowSoftInputMode="adjustResize">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN"/>
+                          <category android:name="android.intent.category.LAUNCHER"/>
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          mkdir -p app/src/main/java/com/dcheshirecat/infinitefrontier
+          cat > app/src/main/java/com/dcheshirecat/infinitefrontier/MainActivity.java << 'EOF'
+          package com.dcheshirecat.infinitefrontier;
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.webkit.WebView;
+          import android.webkit.WebSettings;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebViewClient;
+          import android.view.View;
+          import android.view.Window;
+          import android.view.WindowManager;
+          public class MainActivity extends Activity {
+              private WebView webView;
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  requestWindowFeature(Window.FEATURE_NO_TITLE);
+                  getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                                       WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                  View decorView = getWindow().getDecorView();
+                  decorView.setSystemUiVisibility(
+                      View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                      View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                      View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                      View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                      View.SYSTEM_UI_FLAG_FULLSCREEN |
+                      View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                  webView = new WebView(this);
+                  setContentView(webView);
+                  WebSettings settings = webView.getSettings();
+                  settings.setJavaScriptEnabled(true);
+                  settings.setDomStorageEnabled(true);
+                  settings.setAllowFileAccessFromFileURLs(true);
+                  settings.setAllowUniversalAccessFromFileURLs(true);
+                  settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+                  settings.setMediaPlaybackRequiresUserGesture(false);
+                  webView.setWebChromeClient(new WebChromeClient());
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.loadUrl("file:///android_asset/index.html");
+              }
+              @Override
+              public void onBackPressed() {
+                  if (webView.canGoBack()) webView.goBack();
+                  else super.onBackPressed();
+              }
+          }
+          EOF
+
+          cat > app/src/main/res/values/styles.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="android:Theme.NoTitleBar.Fullscreen">
+                  <item name="android:windowBackground">#000010</item>
+              </style>
+          </resources>
+          EOF
+
+      - name: Write Gradle files
+        run: |
+          cat > build.gradle << 'EOF'
+          buildscript {
+              repositories { google(); mavenCentral() }
+              dependencies { classpath 'com.android.tools.build:gradle:8.2.0' }
+          }
+          allprojects { repositories { google(); mavenCentral() } }
+          EOF
+
+          cat > settings.gradle << 'EOF'
+          include ':app'
+          EOF
+
+          cat > gradle.properties << 'EOF'
+          android.useAndroidX=false
+          org.gradle.jvmargs=-Xmx2g
+          EOF
+
+          cat > app/build.gradle << 'EOF'
+          apply plugin: 'com.android.application'
+          android {
+              compileSdkVersion 34
+              defaultConfig {
+                  applicationId "com.dcheshirecat.infinitefrontier"
+                  minSdkVersion 21
+                  targetSdkVersion 34
+                  versionCode 1
+                  versionName "1.0"
+              }
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                      signingConfig signingConfigs.debug
+                  }
+              }
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+          EOF
+
+      - name: Set up Gradle wrapper
+        run: |
+          mkdir -p gradle/wrapper
+          cat > gradle/wrapper/gradle-wrapper.properties << 'EOF'
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-bin.zip
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
+
+          wget -q https://services.gradle.org/distributions/gradle-8.4-bin.zip -O /tmp/gradle.zip
+          unzip -q /tmp/gradle.zip -d /tmp/gradle-dist
+          GRADLE_BIN=/tmp/gradle-dist/gradle-8.4/bin/gradle
+
+          $GRADLE_BIN wrapper --gradle-version 8.4 --distribution-type bin
+
+      - name: Generate keystore
+        run: |
+          keytool -genkeypair -v \
+            -keystore release.keystore \
+            -alias infinitefrontier \
+            -keyalg RSA -keysize 2048 \
+            -validity 10000 \
+            -storepass infinitefrontier123 \
+            -keypass infinitefrontier123 \
+            -dname "CN=InfiniteFrontier, OU=Dev, O=dcheshirecat, L=Earth, ST=Federation, C=FD"
+
+      - name: Build APK
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Sign APK
+        run: |
+          BUILD_TOOLS=$(ls $ANDROID_HOME/build-tools/ | sort -V | tail -1)
+          $ANDROID_HOME/build-tools/$BUILD_TOOLS/zipalign -v -p 4 \
+            app/build/outputs/apk/release/app-release-unsigned.apk \
+            app-aligned.apk
+          $ANDROID_HOME/build-tools/$BUILD_TOOLS/apksigner sign \
+            --ks release.keystore \
+            --ks-key-alias infinitefrontier \
+            --ks-pass pass:infinitefrontier123 \
+            --key-pass pass:infinitefrontier123 \
+            --out star-trek-infinite-frontier.apk \
+            app-aligned.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: star-trek-infinite-frontier
+          path: star-trek-infinite-frontier.apk
