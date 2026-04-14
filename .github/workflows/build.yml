@@ -159,6 +159,7 @@ jobs:
           cat > app/build.gradle << 'EOF'
           apply plugin: 'com.android.application'
           android {
+              namespace "com.dcheshirecat.infinitefrontier"
               compileSdkVersion 34
               defaultConfig {
                   applicationId "com.dcheshirecat.infinitefrontier"
